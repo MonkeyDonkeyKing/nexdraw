@@ -32,6 +32,12 @@ pub mod nexdraw {
     pub fn update_emperor(ctx: Context<UpdateEmperor>, new_authority: Pubkey) -> Result<()> {
         update_emperor_handler(ctx, new_authority)
     }
+
+    /// Creates a new draw regent account
+    /// Only the emperor can create draw regents
+    pub fn create_draw_regent(ctx: Context<CreateDrawRegent>, regent_key: Pubkey, draws_left: u32, commission: u64) -> Result<()> {
+        create_draw_regent_handler(ctx, regent_key, draws_left, commission)
+    }
 }
 
 declare_id!("DRAWDnBHxRrointnFhaLEsexAXjgW2rUqZU7qpGqxonP");

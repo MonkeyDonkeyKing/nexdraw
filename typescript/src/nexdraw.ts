@@ -48,7 +48,8 @@ export type Nexdraw = {
           "isMut": true,
           "isSigner": false,
           "docs": [
-            "the emperor account that will be updated"
+            "Auto derived below.",
+            "////////////////////////////////////////////////////////////////////////"
           ],
           "pda": {
             "seeds": [
@@ -66,10 +67,7 @@ export type Nexdraw = {
         {
           "name": "authority",
           "isMut": true,
-          "isSigner": true,
-          "docs": [
-            "The current authority of the emperor account"
-          ]
+          "isSigner": true
         }
       ],
       "args": [
@@ -78,22 +76,109 @@ export type Nexdraw = {
           "type": "publicKey"
         }
       ]
+    },
+    {
+      "name": "createDrawRegent",
+      "docs": [
+        "Creates a new draw regent account",
+        "Only the emperor can create draw regents"
+      ],
+      "accounts": [
+        {
+          "name": "emperor",
+          "isMut": false,
+          "isSigner": false,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "type": "string",
+                "value": "emperor"
+              }
+            ]
+          },
+          "relations": [
+            "authority"
+          ]
+        },
+        {
+          "name": "authority",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "drawRegent",
+          "isMut": true,
+          "isSigner": false,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "type": "string",
+                "value": "draw_regent"
+              },
+              {
+                "kind": "arg",
+                "type": "publicKey",
+                "path": "regent_key"
+              }
+            ]
+          }
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": [
+        {
+          "name": "regentKey",
+          "type": "publicKey"
+        },
+        {
+          "name": "drawsLeft",
+          "type": "u32"
+        },
+        {
+          "name": "commission",
+          "type": "u64"
+        }
+      ]
     }
   ],
   "accounts": [
     {
+      "name": "drawRegent",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "drawManager",
+            "type": "publicKey"
+          },
+          {
+            "name": "nextDrawId",
+            "type": "u32"
+          },
+          {
+            "name": "drawsRemaining",
+            "type": "u32"
+          },
+          {
+            "name": "emperorCommission",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
       "name": "emperor",
-      "docs": [
-        "The program manager is the user that is allowed to create lottery managers"
-      ],
       "type": {
         "kind": "struct",
         "fields": [
           {
             "name": "authority",
-            "docs": [
-              "refers to the user that was assigned the authority of the program manager"
-            ],
             "type": "publicKey"
           }
         ]
@@ -159,7 +244,8 @@ export const IDL: Nexdraw = {
           "isMut": true,
           "isSigner": false,
           "docs": [
-            "the emperor account that will be updated"
+            "Auto derived below.",
+            "////////////////////////////////////////////////////////////////////////"
           ],
           "pda": {
             "seeds": [
@@ -177,10 +263,7 @@ export const IDL: Nexdraw = {
         {
           "name": "authority",
           "isMut": true,
-          "isSigner": true,
-          "docs": [
-            "The current authority of the emperor account"
-          ]
+          "isSigner": true
         }
       ],
       "args": [
@@ -189,22 +272,109 @@ export const IDL: Nexdraw = {
           "type": "publicKey"
         }
       ]
+    },
+    {
+      "name": "createDrawRegent",
+      "docs": [
+        "Creates a new draw regent account",
+        "Only the emperor can create draw regents"
+      ],
+      "accounts": [
+        {
+          "name": "emperor",
+          "isMut": false,
+          "isSigner": false,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "type": "string",
+                "value": "emperor"
+              }
+            ]
+          },
+          "relations": [
+            "authority"
+          ]
+        },
+        {
+          "name": "authority",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "drawRegent",
+          "isMut": true,
+          "isSigner": false,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "type": "string",
+                "value": "draw_regent"
+              },
+              {
+                "kind": "arg",
+                "type": "publicKey",
+                "path": "regent_key"
+              }
+            ]
+          }
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": [
+        {
+          "name": "regentKey",
+          "type": "publicKey"
+        },
+        {
+          "name": "drawsLeft",
+          "type": "u32"
+        },
+        {
+          "name": "commission",
+          "type": "u64"
+        }
+      ]
     }
   ],
   "accounts": [
     {
+      "name": "drawRegent",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "drawManager",
+            "type": "publicKey"
+          },
+          {
+            "name": "nextDrawId",
+            "type": "u32"
+          },
+          {
+            "name": "drawsRemaining",
+            "type": "u32"
+          },
+          {
+            "name": "emperorCommission",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
       "name": "emperor",
-      "docs": [
-        "The program manager is the user that is allowed to create lottery managers"
-      ],
       "type": {
         "kind": "struct",
         "fields": [
           {
             "name": "authority",
-            "docs": [
-              "refers to the user that was assigned the authority of the program manager"
-            ],
             "type": "publicKey"
           }
         ]

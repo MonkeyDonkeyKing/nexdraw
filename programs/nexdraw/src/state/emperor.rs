@@ -1,9 +1,7 @@
 use anchor_lang::prelude::*;
 
 #[account]
-/// The program manager is the user that is allowed to create lottery managers
 pub struct Emperor {
-    /// refers to the user that was assigned the authority of the program manager
     pub authority: Pubkey,
 }
 

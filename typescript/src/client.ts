@@ -1,24 +1,14 @@
+import { BN, parseIdlErrors, Program, translateError, type ProgramAccount, type Provider } from '@coral-xyz/anchor';
+import { IDL, type Nexdraw } from './nexdraw';
+import { Metaplex, type JsonMetadata, type Metadata } from '@metaplex-foundation/js';
+import { PROGRAM_ID } from './addresses';
+import { Connection, PublicKey, Transaction } from '@solana/web3.js';
+import { buildAnonymousProvider } from './utils';
 import {
-  BN,
-  parseIdlErrors,
-  Program,
-  translateError,
-  type ProgramAccount,
-  type Provider,
-} from "@coral-xyz/anchor";
-import { IDL, type Nexdraw } from "./nexdraw";
-import {
-  Metaplex,
-  type JsonMetadata,
-  type Metadata,
-} from "@metaplex-foundation/js";
-import { PROGRAM_ID } from "./addresses";
-import { Connection, PublicKey, Transaction } from "@solana/web3.js";
-import { buildAnonymousProvider } from "./utils";
-import {
+  createCreateDrawRegentTransaction,
   createInitializeEmperorTransaction,
-  createUpdateEmperorAuthorityTransaction,
-} from "./instructions";
+  createUpdateEmperorAuthorityTransaction
+} from './instructions';
 
 const idlErrors = parseIdlErrors(IDL);
 
@@ -41,16 +31,14 @@ export class NexDraw {
 
   constructor(provider: Provider, options?: ClientOptions) {
     if (!provider.publicKey) {
-      throw new Error("no public key found on the argued provider");
+      throw new Error('no public key found on the argued provider');
     } else if (!provider.sendAndConfirm) {
-      throw new Error(
-        "no sendAndConfirm function found on the argued provider"
-      );
+      throw new Error('no sendAndConfirm function found on the argued provider');
     }
 
     const defaultReplacements = {
-      "ar://": "https://arweave.net/",
-      "ipfs://": "https://nftstorage.link/ipfs/",
+      'ar://': 'https://arweave.net/',
+      'ipfs://': 'https://nftstorage.link/ipfs/'
     };
 
     this.#mpl = Metaplex.make(provider.connection);
@@ -58,7 +46,7 @@ export class NexDraw {
     this.#provider = provider;
     this.#gatewayReplacements = {
       ...defaultReplacements,
-      ...(options?.gatewayReplacements ?? {}),
+      ...(options?.gatewayReplacements ?? {})
     };
   }
 
@@ -114,11 +102,20 @@ export class NexDraw {
     return this._withParsedTransactionError(tx);
   }
 
+  /**
+   * updates the emperor account
+   * @param newAuthority
+   * @returns {Promise<string>}
+   * @memberof NexDraw
+   *
+   */
   async updateEmperor(newAuthority: PublicKey): Promise<string> {
-    const tx = await createUpdateEmperorAuthorityTransaction(
-      this.#program,
-      newAuthority
-    );
+    const tx = await createUpdateEmperorAuthorityTransaction(this.#program, newAuthority);
+    return this._withParsedTransactionError(tx);
+  }
+
+  async createDrawRegent(regent_key: PublicKey, draws_remaining: number, commission: BN): Promise<string> {
+    const tx = await createCreateDrawRegentTransaction(this.#program, regent_key, draws_remaining, commission);
     return this._withParsedTransactionError(tx);
   }
 

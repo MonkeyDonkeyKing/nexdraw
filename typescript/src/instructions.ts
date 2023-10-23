@@ -1,24 +1,20 @@
-import { BN, Program } from "@coral-xyz/anchor";
-import type { Creator } from "@metaplex-foundation/js";
-import {
-  type AccountMeta,
-  PublicKey,
-  Transaction,
-  TransactionInstruction,
-} from "@solana/web3.js";
-import type { Nexdraw } from "./nexdraw";
-import { EMPEROR_ADDRESS } from "./addresses";
+import { BN, Program } from '@coral-xyz/anchor';
+import type { Creator } from '@metaplex-foundation/js';
+import { type AccountMeta, PublicKey, Transaction, TransactionInstruction } from '@solana/web3.js';
+import type { Nexdraw } from './nexdraw';
+import { EMPEROR_ADDRESS } from './addresses';
+import { MethodParams } from './types';
 
 /**
- * Create a full transaction for `create_app_xnft`.
+ * Create a full transaction for `initialize_emperor`.
  * @export
  * @param {...Parameters<typeof createIinitializeEmperorInstruction>} args
  * @returns {Promise<Transaction>}
  */
 export async function createInitializeEmperorTransaction(
-  ...args: Parameters<typeof createIinitializeEmperorInstruction>
+  ...args: Parameters<typeof createInitializeEmperorInstruction>
 ): Promise<Transaction> {
-  const ix = await createIinitializeEmperorInstruction(...args);
+  const ix = await createInitializeEmperorInstruction(...args);
   return new Transaction().add(ix);
 }
 
@@ -28,17 +24,15 @@ export async function createInitializeEmperorTransaction(
  * @param {Program<Nexdraw>} program
  * @returns {Promise<TransactionInstruction>}
  */
-export async function createIinitializeEmperorInstruction(
-  program: Program<Nexdraw>
-): Promise<TransactionInstruction> {
+export async function createInitializeEmperorInstruction(program: Program<Nexdraw>): Promise<TransactionInstruction> {
   if (!program.provider.publicKey) {
-    throw new Error("no public key found on the program provider");
+    throw new Error('no public key found on the program provider');
   }
   return program.methods.initializeEmperor().accounts({}).instruction();
 }
 
 /**
- * Update the authority of the emperor account.
+ * Create a full transaction for `update_emperor_authority`.
  * @export
  * @param {...Parameters<typeof createUpdateEmperorAuthorityInstruction>} args
  * @returns {Promise<Transaction>}
@@ -60,10 +54,46 @@ export async function createUpdateEmperorAuthorityTransaction(
  */
 export async function createUpdateEmperorAuthorityInstruction(
   program: Program<Nexdraw>,
-  newAuthority: PublicKey
+  newAuthority: MethodParams<'updateEmperor'>
 ): Promise<TransactionInstruction> {
   if (!program.provider.publicKey) {
-    throw new Error("no public key found on the program provider");
+    throw new Error('no public key found on the program provider');
   }
   return program.methods.updateEmperor(newAuthority).accounts({}).instruction();
+}
+
+/**
+ * Create a full transaction for `create_draw_regent`.
+ * @export
+ * @param {...Parameters<typeof createCreateDrawRegentInstruction>} args
+ * @returns {Promise<Transaction>}
+ *
+ */
+export async function createCreateDrawRegentTransaction(
+  ...args: Parameters<typeof createCreateDrawRegentInstruction>
+): Promise<Transaction> {
+  const ix = await createCreateDrawRegentInstruction(...args);
+  return new Transaction().add(ix);
+}
+
+/**
+ *  Create the ix instance for the `create_draw_regent` instruction.
+ * @export
+ * @param {Program<Nexdraw>} program
+ * @param {PublicKey} regent_key
+ * @param {number} draws_remaining
+ * @param {BN} commission
+ * @returns {Promise<TransactionInstruction>}
+ *
+ */
+export async function createCreateDrawRegentInstruction(
+  program: Program<Nexdraw>,
+  regent_key: PublicKey,
+  draws_remaining: number,
+  commission: BN
+): Promise<TransactionInstruction> {
+  if (!program.provider.publicKey) {
+    throw new Error('no public key found on the program provider');
+  }
+  return program.methods.createDrawRegent(regent_key, draws_remaining, commission).accounts({}).instruction();
 }

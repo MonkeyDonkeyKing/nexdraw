@@ -1,6 +1,5 @@
 import * as anchor from '@coral-xyz/anchor';
-import { client, program, wait } from '../common';
-import { createIinitializeEmperorInstruction } from '../../typescript/src/instructions';
+import { client, wait } from '../common';
 import { assert } from 'chai';
 import { EMPEROR_ADDRESS } from '../../typescript/src/addresses';
 import { NexDraw } from '../../typescript/src';
@@ -14,7 +13,7 @@ describe('Emperor functionalities', () => {
       assert.ok(a);
     });
     it('Checks if the emperor is initialized', async () => {
-      const emperor = await program.account.emperor.fetch(EMPEROR_ADDRESS[0]);
+      const emperor = await client.program.account.emperor.fetch(EMPEROR_ADDRESS[0]);
       assert.ok(emperor.authority.equals(client.provider.publicKey));
     });
   });

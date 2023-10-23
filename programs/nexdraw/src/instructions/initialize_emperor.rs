@@ -2,11 +2,10 @@ use crate::Emperor;
 use anchor_lang::prelude::*;
 
 #[derive(Accounts)]
-pub struct InitializeEmperor<'info> {    
-    #[account(mut)]
-    /// the account that will pay for the transaction 
-    /// and the future authority of the emperor account
-    pub payer: Signer<'info>,
+pub struct InitializeEmperor<'info> {
+    ////////////////////////////////////////////////////////////////////////////
+    // Auto derived below.
+    ////////////////////////////////////////////////////////////////////////////
     #[account(
         init,
         space = Emperor::SIZE,
@@ -14,8 +13,10 @@ pub struct InitializeEmperor<'info> {
         seeds = [b"emperor".as_ref()],
         bump
     )]
-    /// the emperor account that is to be initialized
     pub emperor: Account<'info, Emperor>,
+
+    #[account(mut)]
+    pub payer: Signer<'info>,
 
     pub system_program: Program<'info, System>,
 }

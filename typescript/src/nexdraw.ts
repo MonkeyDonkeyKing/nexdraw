@@ -10,21 +10,9 @@ export type Nexdraw = {
       ],
       "accounts": [
         {
-          "name": "payer",
-          "isMut": true,
-          "isSigner": true,
-          "docs": [
-            "the account that will pay for the transaction",
-            "and the future authority of the emperor account"
-          ]
-        },
-        {
           "name": "emperor",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "the emperor account that is to be initialized"
-          ],
           "pda": {
             "seeds": [
               {
@@ -34,6 +22,11 @@ export type Nexdraw = {
               }
             ]
           }
+        },
+        {
+          "name": "payer",
+          "isMut": true,
+          "isSigner": true
         },
         {
           "name": "systemProgram",
@@ -128,21 +121,9 @@ export const IDL: Nexdraw = {
       ],
       "accounts": [
         {
-          "name": "payer",
-          "isMut": true,
-          "isSigner": true,
-          "docs": [
-            "the account that will pay for the transaction",
-            "and the future authority of the emperor account"
-          ]
-        },
-        {
           "name": "emperor",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "the emperor account that is to be initialized"
-          ],
           "pda": {
             "seeds": [
               {
@@ -152,6 +133,11 @@ export const IDL: Nexdraw = {
               }
             ]
           }
+        },
+        {
+          "name": "payer",
+          "isMut": true,
+          "isSigner": true
         },
         {
           "name": "systemProgram",

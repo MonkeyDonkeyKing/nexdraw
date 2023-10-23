@@ -7,10 +7,18 @@ import {
   type Provider,
 } from "@coral-xyz/anchor";
 import { IDL, type Nexdraw } from "./nexdraw";
-import { Metaplex } from "@metaplex-foundation/js/dist/types/Metaplex";
+import {
+  Metaplex,
+  type JsonMetadata,
+  type Metadata,
+} from "@metaplex-foundation/js";
 import { PROGRAM_ID } from "./addresses";
-import { Connection } from "@solana/web3.js";
+import { Connection, PublicKey, Transaction } from "@solana/web3.js";
 import { buildAnonymousProvider } from "./utils";
+import {
+  createInitializeEmperorTransaction,
+  createUpdateEmperorAuthorityTransaction,
+} from "./instructions";
 
 const idlErrors = parseIdlErrors(IDL);
 
@@ -64,5 +72,61 @@ export class NexDraw {
    */
   static anonymous(connection: Connection, options?: ClientOptions): NexDraw {
     return new NexDraw(buildAnonymousProvider(connection), options);
+  }
+
+  /**
+   * Readonly accessor for the internal Metaplex SDK instance.
+   * @readonly
+   * @type {Metaplex}
+   * @memberof NexDraw
+   */
+  get metaplex(): Metaplex {
+    return this.#mpl;
+  }
+
+  /**
+   * Readonly access for the internal program instance.
+   * @readonly
+   * @type {Program<Nexdraw>}
+   * @memberof NexDraw
+   */
+  get program(): Program<Nexdraw> {
+    return this.#program;
+  }
+
+  /**
+   * Readonly accessor for the internal provider instance.
+   * @readonly
+   * @type {Provider}
+   * @memberof NexDraw
+   */
+  get provider(): Provider {
+    return this.#provider;
+  }
+
+  /**
+   * initializes the emperor account
+   * @returns {Promise<string>}
+   * @memberof NexDraw
+   */
+  async createEmperor(): Promise<string> {
+    const tx = await createInitializeEmperorTransaction(this.#program);
+    return this._withParsedTransactionError(tx);
+  }
+
+  async updateEmperor(newAuthority: PublicKey): Promise<string> {
+    const tx = await createUpdateEmperorAuthorityTransaction(
+      this.#program,
+      newAuthority
+    );
+    return this._withParsedTransactionError(tx);
+  }
+
+  private async _withParsedTransactionError(tx: Transaction): Promise<string> {
+    try {
+      return await this.#provider.sendAndConfirm!(tx);
+    } catch (err) {
+      throw translateError(err, idlErrors);
+    }
   }
 }

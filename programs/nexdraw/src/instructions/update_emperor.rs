@@ -3,16 +3,17 @@ use anchor_lang::prelude::*;
 
 #[derive(Accounts)]
 pub struct UpdateEmperor<'info> {
+    ////////////////////////////////////////////////////////////////////////////
+    /// Auto derived below.
+    /// ////////////////////////////////////////////////////////////////////////
     #[account(
         mut,
         seeds = [b"emperor".as_ref()],
         bump,
         has_one = authority,
     )]
-    /// the emperor account that will be updated
     pub emperor: Account<'info, Emperor>,
     #[account(mut)]
-    /// The current authority of the emperor account
     pub authority: Signer<'info>,
 }
 

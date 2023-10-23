@@ -1,7 +1,11 @@
 import * as anchor from "@coral-xyz/anchor";
 import type { Nexdraw } from "../target/types/nexdraw";
+import { NexDraw } from "../typescript/src";
+import { PROGRAM_ID } from "../typescript/src/addresses";
 
-const program = anchor.workspace.Xnft as anchor.Program<Nexdraw>;
+export const program = anchor.workspace.Nexdraw as anchor.Program<Nexdraw>;
+
+export const client = new NexDraw(program.provider);
 
 export const wait = (ms: number) =>
   new Promise((resolve) => setTimeout(resolve, ms));

@@ -1,0 +1,43 @@
+{
+  "name": "@solpix/nexdraw",
+  "version": "0.0.1",
+  "description": "Node.js client for the NexDraw protocol",
+  "files": [
+    "lib"
+  ],
+  "browser": "./lib/browser/index.js",
+  "main": "./lib/cjs/index.js",
+  "module": "./lib/esm/index.js",
+  "types": "./lib/types/index.d.ts",
+  "scripts": {
+    "build": "yarn clean && tsc -p tsconfig.cjs.json && tsc -p tsconfig.esm.json && rollup --config",
+    "clean": "rm -rf ./lib",
+    "lint": "eslint .",
+    "test": "jest",
+    "prepublishOnly": "yarn lint && yarn test",
+    "prepack": "yarn build && cp ../LICENSE . && cp ../README.md .",
+    "postpack": "rm LICENSE README.md"
+  },
+  "dependencies": {
+    "@coral-xyz/anchor": "^0.29.0",
+    "@metaplex-foundation/js": "^0.19.5",
+    "@solana/spl-token": "^0.3.7",
+    "@solana/web3.js": "^1.87.3",
+    "semver": "^7.3.8",
+    "zod": "^3.21.4"
+  },
+  "devDependencies": {
+    "@jest/globals": "^29.3.1",
+    "@rollup/plugin-commonjs": "^24.0.1",
+    "@rollup/plugin-node-resolve": "^15.0.1",
+    "@rollup/plugin-typescript": "^11.0.0",
+    "@typescript-eslint/eslint-plugin": "^5.56.0",
+    "@typescript-eslint/parser": "^5.56.0",
+    "eslint": "^8.36.0",
+    "eslint-config-prettier": "^8.8.0",
+    "jest": "^29.3.1",
+    "rollup": "^3.20.2",
+    "ts-jest": "^29.0.3",
+    "typescript": "^5.0.2"
+  }
+}

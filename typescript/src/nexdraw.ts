@@ -142,7 +142,7 @@ export type Nexdraw = {
         },
         {
           "name": "commission",
-          "type": "u64"
+          "type": "u16"
         }
       ]
     }
@@ -166,8 +166,20 @@ export type Nexdraw = {
             "type": "u32"
           },
           {
-            "name": "emperorCommission",
-            "type": "u64"
+            "name": "emperorPercentCommission",
+            "docs": [
+              "decimal percentage representation of the commission"
+            ],
+            "type": "u16"
+          },
+          {
+            "name": "reserved",
+            "type": {
+              "array": [
+                "u8",
+                70
+              ]
+            }
           }
         ]
       }
@@ -180,6 +192,45 @@ export type Nexdraw = {
           {
             "name": "authority",
             "type": "publicKey"
+          },
+          {
+            "name": "reserved",
+            "type": {
+              "array": [
+                "u8",
+                320
+              ]
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "types": [
+    {
+      "name": "UpdateDrawRegentParams",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "increaseDraws",
+            "type": "u32"
+          },
+          {
+            "name": "newCommission",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "PercentageHandler",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "value",
+            "type": "u16"
           }
         ]
       }
@@ -338,7 +389,7 @@ export const IDL: Nexdraw = {
         },
         {
           "name": "commission",
-          "type": "u64"
+          "type": "u16"
         }
       ]
     }
@@ -362,8 +413,20 @@ export const IDL: Nexdraw = {
             "type": "u32"
           },
           {
-            "name": "emperorCommission",
-            "type": "u64"
+            "name": "emperorPercentCommission",
+            "docs": [
+              "decimal percentage representation of the commission"
+            ],
+            "type": "u16"
+          },
+          {
+            "name": "reserved",
+            "type": {
+              "array": [
+                "u8",
+                70
+              ]
+            }
           }
         ]
       }
@@ -376,6 +439,45 @@ export const IDL: Nexdraw = {
           {
             "name": "authority",
             "type": "publicKey"
+          },
+          {
+            "name": "reserved",
+            "type": {
+              "array": [
+                "u8",
+                320
+              ]
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "types": [
+    {
+      "name": "UpdateDrawRegentParams",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "increaseDraws",
+            "type": "u32"
+          },
+          {
+            "name": "newCommission",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "PercentageHandler",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "value",
+            "type": "u16"
           }
         ]
       }

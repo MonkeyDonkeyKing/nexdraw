@@ -82,7 +82,7 @@ export async function createCreateDrawRegentTransaction(
  * @param {Program<Nexdraw>} program
  * @param {PublicKey} regent_key
  * @param {number} draws_remaining
- * @param {BN} commission
+ * @param {number} commission
  * @returns {Promise<TransactionInstruction>}
  *
  */
@@ -90,7 +90,7 @@ export async function createCreateDrawRegentInstruction(
   program: Program<Nexdraw>,
   regent_key: PublicKey,
   draws_remaining: number,
-  commission: BN
+  commission: number
 ): Promise<TransactionInstruction> {
   if (!program.provider.publicKey) {
     throw new Error('no public key found on the program provider');

@@ -14,6 +14,7 @@ security_txt! {
 
 mod instructions;
 mod state;
+mod utils;
 
 use instructions::*;
 use state::*;
@@ -35,7 +36,7 @@ pub mod nexdraw {
 
     /// Creates a new draw regent account
     /// Only the emperor can create draw regents
-    pub fn create_draw_regent(ctx: Context<CreateDrawRegent>, regent_key: Pubkey, draws_left: u32, commission: u64) -> Result<()> {
+    pub fn create_draw_regent(ctx: Context<CreateDrawRegent>, regent_key: Pubkey, draws_left: u32, commission: u16) -> Result<()> {
         create_draw_regent_handler(ctx, regent_key, draws_left, commission)
     }
 }

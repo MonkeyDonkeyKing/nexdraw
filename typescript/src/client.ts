@@ -1,4 +1,4 @@
-import { BN, parseIdlErrors, Program, translateError, type ProgramAccount, type Provider } from '@coral-xyz/anchor';
+import { parseIdlErrors, Program, translateError, type ProgramAccount, type Provider } from '@coral-xyz/anchor';
 import { IDL, type Nexdraw } from './nexdraw';
 import { Metaplex, type JsonMetadata, type Metadata } from '@metaplex-foundation/js';
 import { PROGRAM_ID } from './addresses';
@@ -114,7 +114,7 @@ export class NexDraw {
     return this._withParsedTransactionError(tx);
   }
 
-  async createDrawRegent(regent_key: PublicKey, draws_remaining: number, commission: BN): Promise<string> {
+  async createDrawRegent(regent_key: PublicKey, draws_remaining: number, commission: number): Promise<string> {
     const tx = await createCreateDrawRegentTransaction(this.#program, regent_key, draws_remaining, commission);
     return this._withParsedTransactionError(tx);
   }

@@ -11,7 +11,7 @@ describe('draw_regent functionalities', () => {
     describe('emperor initializes draw_regent', async () => {
       let drawRegent = anchor.web3.Keypair.generate();
       let drawsRemaining = 5;
-      let commission = new anchor.BN(0);
+      let commission = 5;
       it('calls initializeDrawRegent', async () => {
         await client.createDrawRegent(drawRegent.publicKey, drawsRemaining, commission);
         await wait(1000);
@@ -20,7 +20,7 @@ describe('draw_regent functionalities', () => {
         let drawRegentAccount = deriveDrawRegent(drawRegent.publicKey);
         let drawRegentData = await client.program.account.drawRegent.fetch(drawRegentAccount[0]);
         assert.ok(drawRegentData.drawManager.equals(drawRegent.publicKey));
-        assert.ok(drawRegentData.emperorCommission.cmp(commission) == 0);
+        assert.ok(drawRegentData.emperorPercentCommission == commission);
         assert.ok(drawRegentData.drawsRemaining == drawsRemaining);
         assert.ok(drawRegentData.nextDrawId == 0);
       });
@@ -28,7 +28,7 @@ describe('draw_regent functionalities', () => {
     describe('emperor initializes draw_regent with commission', async () => {
       let drawRegent = anchor.web3.Keypair.generate();
       let drawsRemaining = 5;
-      let commission = new anchor.BN(100);
+      let commission = 100;
       it('calls initializeDrawRegent', async () => {
         await client.createDrawRegent(drawRegent.publicKey, drawsRemaining, commission);
         await wait(1000);
@@ -37,7 +37,7 @@ describe('draw_regent functionalities', () => {
         let drawRegentAccount = deriveDrawRegent(drawRegent.publicKey);
         let drawRegentData = await client.program.account.drawRegent.fetch(drawRegentAccount[0]);
         assert.ok(drawRegentData.drawManager.equals(drawRegent.publicKey));
-        assert.ok(drawRegentData.emperorCommission.cmp(commission) == 0);
+        assert.ok(drawRegentData.emperorPercentCommission == commission);
         assert.ok(drawRegentData.drawsRemaining == drawsRemaining);
         assert.ok(drawRegentData.nextDrawId == 0);
       });
@@ -53,7 +53,7 @@ describe('draw_regent functionalities', () => {
           assert.ok(balance > 1 * LAMPORTS_PER_SOL);
         });
         await weakAccess.program.methods
-          .createDrawRegent(weakAccess.provider.publicKey, 0, new anchor.BN(0))
+          .createDrawRegent(weakAccess.provider.publicKey, 0, 0)
           .accounts({
             drawRegent: pda[0]
           })
@@ -77,7 +77,7 @@ describe('draw_regent functionalities', () => {
         let drawRegentAccount = deriveDrawRegent(regent.provider.publicKey);
         let drawRegentData = await regent.program.account.drawRegent.fetch(drawRegentAccount[0]);
         assert.ok(drawRegentData.drawManager.equals(regent.provider.publicKey));
-        assert.ok(drawRegentData.emperorCommission.cmp(new anchor.BN(0)) == 0);
+        assert.ok(drawRegentData.emperorPercentCommission == 0);
         assert.ok(drawRegentData.drawsRemaining == 5);
         assert.ok(drawRegentData.nextDrawId == 0);
         regent.provider.connection.getBalance(regent.provider.publicKey).then(balance => {

@@ -1,5 +1,3 @@
-use std::ops::DerefMut;
-
 use crate::{DrawRegent, Emperor};
 use anchor_lang::prelude::*;
 
@@ -31,7 +29,7 @@ pub struct CreateDrawRegent<'info> {
 }
 
 
-pub fn create_draw_regent_handler(ctx: Context<CreateDrawRegent>, regent_key: Pubkey, draws_left: u32, comission: u64) -> Result<()> {
+pub fn create_draw_regent_handler(ctx: Context<CreateDrawRegent>, regent_key: Pubkey, draws_left: u32, comission: u16) -> Result<()> {
     let draw_regent = &mut ctx.accounts.draw_regent;
     **draw_regent = DrawRegent::new(
         regent_key,

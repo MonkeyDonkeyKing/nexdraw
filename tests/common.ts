@@ -8,7 +8,7 @@ const program = anchor.workspace.Nexdraw as anchor.Program<Nexdraw>;
 
 export function createRandomProvider(confirmOptions?: anchor.web3.ConfirmOptions): anchor.AnchorProvider {
   const randomWallet = new anchor.Wallet(Keypair.generate());
-  return new anchor.AnchorProvider(program.provider.connection, randomWallet, confirmOptions);
+  return new anchor.AnchorProvider(program.provider.connection, randomWallet, confirmOptions ?? {});
 }
 
 export function createRandomNexDraw(
@@ -16,7 +16,7 @@ export function createRandomNexDraw(
   ClientOptions?: ClientOptions
 ): NexDraw {
   const randomProvider = createRandomProvider(confirmOptions);
-  return new NexDraw(randomProvider, ClientOptions);
+  return new NexDraw(randomProvider, ClientOptions ?? {});
 }
 
 export const client = new NexDraw(program.provider);

@@ -1,6 +1,7 @@
 import { BN, Provider } from '@coral-xyz/anchor';
 import { ClientOptions, NexDraw } from '../typescript/src';
 import { PublicKey, Transaction } from '@solana/web3.js';
+import { wait } from './common';
 
 export class NexDrawBuilder {
   private _provider?: Provider;
@@ -52,6 +53,8 @@ export class NexDrawBuilder {
         this._initializeAsDrawRegent.commission
       );
     }
+
+    await wait(1000);
 
     return nexDraw;
   }

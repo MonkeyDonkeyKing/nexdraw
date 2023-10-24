@@ -162,7 +162,7 @@ export type Nexdraw = {
       "accounts": [
         {
           "name": "drawRegent",
-          "isMut": false,
+          "isMut": true,
           "isSigner": false
         },
         {
@@ -471,7 +471,7 @@ export const IDL: Nexdraw = {
       "accounts": [
         {
           "name": "drawRegent",
-          "isMut": false,
+          "isMut": true,
           "isSigner": false
         },
         {

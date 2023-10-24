@@ -21,7 +21,7 @@ export type MethodParams<T extends keyof Program<Nexdraw>['methods']> = Paramete
 export type EmperorAccount = IdlAccounts<Nexdraw>['emperor'];
 export type DrawRegentAccount = IdlAccounts<Nexdraw>['drawRegent'];
 
-// export type IdlCreateXnftParameters = IdlTypes<Nexdraw>[""];
+export type IdlTimedParams = IdlTypes<Nexdraw>['TimedParams'];
 
 // =================
 // ABSTRACTION TYPES

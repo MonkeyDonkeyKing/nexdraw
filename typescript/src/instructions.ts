@@ -3,7 +3,7 @@ import type { Creator } from '@metaplex-foundation/js';
 import { type AccountMeta, PublicKey, Transaction, TransactionInstruction } from '@solana/web3.js';
 import type { Nexdraw } from './nexdraw';
 import { EMPEROR_ADDRESS } from './addresses';
-import { MethodParams } from './types';
+import { IdlTimedParams, MethodParams } from './types';
 
 /**
  * Create a full transaction for `initialize_emperor`.
@@ -136,4 +136,38 @@ export async function createUpdateDrawRegentInstruction(
       drawRegent: draw_regent
     })
     .instruction();
+}
+
+/**
+ * Create a full transaction for `create_timed_sol_lottery`.
+ * @export
+ * @param {...Parameters<typeof createCreateDrawRegentInstruction>} args
+ * @returns {Promise<Transaction>}
+ *
+ */
+export async function createCreateTimedSolLotteryTransaction(
+  ...args: Parameters<typeof createCreateTimedSolLotteryInstruction>
+): Promise<Transaction> {
+  const ix = await createCreateTimedSolLotteryInstruction(...args);
+  return new Transaction().add(ix);
+}
+
+/**
+ *  Create the ix instance for the `create_timed_sol_lottery` instruction.
+ * @export
+ * @param {Program<Nexdraw>} program
+ * @param {IdlTimedParams} timedParams
+ * @param {BN} ticketPrice
+ * @returns {Promise<TransactionInstruction>}
+ *
+ */
+export async function createCreateTimedSolLotteryInstruction(
+  program: Program<Nexdraw>,
+  timedParams: IdlTimedParams,
+  ticketPrice: BN
+): Promise<TransactionInstruction> {
+  if (!program.provider.publicKey) {
+    throw new Error('no public key found on the program provider');
+  }
+  return program.methods.createTimedSolLottery(timedParams, ticketPrice).accounts({}).instruction();
 }

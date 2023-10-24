@@ -1,4 +1,4 @@
-import { parseIdlErrors, Program, translateError, type ProgramAccount, type Provider } from '@coral-xyz/anchor';
+import { parseIdlErrors, Program, translateError, type ProgramAccount, type Provider, BN } from '@coral-xyz/anchor';
 import { IDL, type Nexdraw } from './nexdraw';
 import { Metaplex, type JsonMetadata, type Metadata } from '@metaplex-foundation/js';
 import { PROGRAM_ID } from './addresses';
@@ -6,10 +6,12 @@ import { Connection, PublicKey, Transaction } from '@solana/web3.js';
 import { buildAnonymousProvider } from './utils';
 import {
   createCreateDrawRegentTransaction,
+  createCreateTimedSolLotteryTransaction,
   createInitializeEmperorTransaction,
   createUpdateDrawRegentTransaction,
   createUpdateEmperorAuthorityTransaction
 } from './instructions';
+import { IdlTimedParams } from './types';
 
 const idlErrors = parseIdlErrors(IDL);
 
@@ -149,6 +151,19 @@ export class NexDraw {
       draws_remaining,
       new_emperor_commission
     );
+    return this._withParsedTransactionError(tx);
+  }
+
+  /**
+   * creates a new draw
+   * @param {IdlTimedParams} timedParams
+   * @param {BN} ticketPrice
+   * @returns {Promise<string>}
+   * @memberof NexDraw
+   *
+   */
+  async createDraw(timedParams: IdlTimedParams, ticketPrice: BN): Promise<string> {
+    const tx = await createCreateTimedSolLotteryTransaction(this.#program, timedParams, ticketPrice);
     return this._withParsedTransactionError(tx);
   }
 

@@ -4,11 +4,12 @@ use crate::state::{DrawRegent, Lottery, TimedParams, Timed, TicketPrice, TicketI
 
 #[derive(Accounts)]
 pub struct CreateTimedSolLottery<'info> {
-    #[account(mut)]
-    pub draw_manager: Signer<'info>,
     ////////////////////////////////////////////////////////////////////////////
     // Auto derived below.
     ////////////////////////////////////////////////////////////////////////////
+    #[account(mut)]
+    pub draw_manager: Signer<'info>, 
+    
     #[account(
         seeds = [b"draw_regent".as_ref(), draw_manager.key().as_ref()],
         bump,

@@ -53,7 +53,12 @@ declare_id!("DRAWDnBHxRrointnFhaLEsexAXjgW2rUqZU7qpGqxonP");
 pub enum NexdrawErrors {
     #[msg("invalid authority provided")]
     InvalidAuthority,
-
     #[msg("invalid percentage provided")]
     InvalidPercentage,
+
+    ElapsedEndTime,
+    DurationisZero,
+    MinTicketsIsZero,
+    MinMaxTicketsCrossOver,
+    NoNftDuplicates,
 }

@@ -1,7 +1,7 @@
 mod emperor;
 mod draw_regent;
-mod parameters;
+mod lottery;
 
 pub use emperor::*;
 pub use draw_regent::*;
-pub use parameters::*;
+pub use lottery::*;

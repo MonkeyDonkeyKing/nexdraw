@@ -1,0 +1,476 @@
+mod capped_lottery;
+mod lottery;
+mod lottery_info;
+mod prizes;
+mod tickets;
+mod timed_lottery;
+mod types;
+mod winners;
+
+pub use capped_lottery::Capped;
+pub use lottery::Lottery;
+pub use lottery_info::LotteryInfo;
+pub use prizes::Prizes;
+pub use tickets::{ TicketInfo, TicketPrice };
+pub use timed_lottery::Timed;
+pub use types::{ CancelStatus, DrawingStatus, LotteryStatus, LotteryType };
+pub use winners::Winner;use super::tickets::TicketInfo;
+use super::types::LotteryType;
+use super::winners::Winners;
+use super::{ LotteryInfo, Timed };
+use anchor_lang::prelude::*;
+
+#[account]
+#[derive(PartialEq, Eq, Debug)]
+pub struct Lottery {
+    /// The pubkey of the lottery manager.
+    manager: Pubkey,
+    /// The id of the lottery.
+    lottery_id: u32,
+    /// Info about the lottery.
+    lottery_info: LotteryInfo,
+    /// The info about the tickets,
+    ticket_info: TicketInfo,
+    winners: Winners,
+    /// Unused reservfe byte space for future changes
+    _reserved: [u8; 64],
+}
+
+impl Lottery {
+    pub fn size(max_prizes_size: usize) -> usize {
+        8 + // anchor namespace
+            32 + // manager
+            4 + // lottery_id
+            LotteryInfo::size(max_prizes_size) + // lottery_info
+            TicketInfo::size() // ticket_info
+    }
+    pub fn try_new_timed(
+        manager: Pubkey,
+        lottery_id: u32,
+        timed: Timed,
+        ticket_info: TicketInfo
+    ) -> Result<Self> {
+        Ok(Self {
+            manager,
+            lottery_id,
+            lottery_info: LotteryInfo::new(LotteryType::Timed(timed)),
+            ticket_info,
+            winners: Winners::new(),
+            _reserved: [0; 64],
+        })
+    }
+}
+use anchor_lang::prelude::*;
+
+use crate::state::{ lottery::timed_lottery::TimedParams, Timed };
+
+use super::{ CancelStatus, DrawingStatus, LotteryStatus, LotteryType, Prizes };
+
+#[derive(AnchorSerialize, AnchorDeserialize, Clone, PartialEq, Eq, Debug)]
+pub struct LotteryInfo {
+    lottery_type: LotteryType,
+    status: LotteryStatus,
+    drawing_status: Option<DrawingStatus>,
+    cancel_status: Option<CancelStatus>,
+    prizes: Prizes,
+}
+
+impl LotteryInfo {
+    pub fn size(max_prizes_size: usize) -> usize {
+        LotteryType::size() + // lottery_type
+            LotteryStatus::SIZE + // status
+            DrawingStatus::SIZE + // drawing_status
+            CancelStatus::SIZE + // cancel_status
+            Prizes::size(max_prizes_size) // prizes
+    }
+
+    pub fn new(lottery_type: LotteryType) -> Self {
+        Self {
+            lottery_type,
+            status: LotteryStatus::Concepting,
+            drawing_status: None,
+            cancel_status: None,
+            prizes: Prizes::new(),
+        }
+    }
+
+    pub fn update_lottery_type(&mut self, lottery_type: LotteryType) {
+        matches!(self.status, LotteryStatus::Concepting);
+        let updated_lottery_type = match lottery_type {
+            LotteryType::Capped(_) => {
+                panic!("Capped lotteries not supported yet");
+            }
+            LotteryType::Timed(x) => LotteryType::Timed(x),
+        };
+        self.lottery_type = updated_lottery_type;
+    }
+}use anchor_lang::prelude::*;
+
+#[derive(AnchorSerialize, AnchorDeserialize, Clone, PartialEq, Eq, Debug)]
+pub enum TicketPrice {
+    Sol {
+        value: u64,
+    },
+    Spl {
+        mint: Pubkey,
+        value: u64,
+    },
+}
+
+impl TicketPrice {
+    const SOL_SIZE: usize = 1 + 8;
+    const SPL_SIZE: usize = 1 + 32 + 8;
+
+    pub fn size() -> usize {
+        Self::SOL_SIZE.max(Self::SPL_SIZE)
+    }
+
+    /// right now there is only $SOL support
+    pub fn sol(value: u64) -> Self {
+        Self::Sol { value }
+    }
+    // pub fn spl(mint: Pubkey, value: u64) -> Self {
+    //     Self::Spl { mint, value }
+    // }
+}
+
+#[derive(AnchorSerialize, AnchorDeserialize, Clone, PartialEq, Eq, Debug)]
+pub struct TicketInfo {
+    price: TicketPrice,
+    sold: u32,
+}
+
+impl TicketInfo {
+    pub fn size() -> usize {
+        TicketPrice::size() + 4
+    }
+
+    pub fn new(price: TicketPrice) -> Self {
+        Self { price, sold: 0 }
+    }
+}use anchor_lang::prelude::*;
+
+#[derive(AnchorSerialize, AnchorDeserialize, Clone, PartialEq, Eq, Debug)]
+pub struct Winner {
+    pub ticket_id: u32,
+    pub claimed: bool,
+}
+
+impl Winner {
+    pub const SIZE: usize = 4 + 1;
+
+    pub fn new(ticket_id: u32) -> Self {
+        Self {
+            ticket_id,
+            claimed: false,
+        }
+    }
+}
+
+
+#[derive(AnchorSerialize, AnchorDeserialize, Clone, PartialEq, Eq, Debug)]
+pub struct Winners(Vec<Winner>);
+
+impl Winners {
+    pub fn size(max_size: usize) -> usize {
+        Winner::SIZE * max_size
+    }
+
+    pub fn new() -> Self {
+        Self(vec![])
+    }
+
+    pub fn len(&self) -> usize {
+        self.0.len()
+    }
+
+    pub fn add_winner(&mut self, ticket_id: u32) -> Result<()> {
+        if self.contains_ticket_id(ticket_id) {
+            return Err(ProgramError::InvalidInstructionData.into()); // Ticket ID already a winner
+        }
+        self.0.push(Winner::new(ticket_id));
+        Ok(())
+    }
+
+    pub fn claim_winner(&mut self, ticket_id: u32) -> Result<()> {
+        if let Some(winner) = self.0.iter_mut().find(|w| w.ticket_id == ticket_id) {
+            if winner.claimed {
+                return Err(ProgramError::InvalidInstructionData.into()); // Ticket already claimed
+            }
+            winner.claimed = true;
+            Ok(())
+        } else {
+            Err(ProgramError::InvalidAccountData.into()) // Ticket ID not found
+        }
+    }
+
+    pub fn is_claimed(&self, ticket_id: u32) -> bool {
+        self.0
+            .iter()
+            .any(|winner| winner.ticket_id == ticket_id && winner.claimed)
+    }
+
+    fn contains_ticket_id(&self, ticket_id: u32) -> bool {
+        self.0.iter().any(|winner| winner.ticket_id == ticket_id)
+    }
+}use anchor_lang::prelude::*;
+
+use crate::NexdrawErrors;
+
+#[derive(AnchorSerialize, AnchorDeserialize, Clone, PartialEq, Eq, Debug)]
+pub struct Timed {
+    end_time: i64,
+    min_tickets_sold: u32,
+    tickets_for_sale: Option<u32>,
+    reserved: [u8; 112],
+    reserved2: [u8; 7],
+}
+
+pub struct TimedParams {
+    pub end_time: i64,
+    pub min_tickets_sold: u32,
+    pub tickets_for_sale: Option<u32>,
+    pub current_time: i64,
+}
+
+impl Timed {
+    pub const SIZE: usize = 8 + 4 + (1 + 4) + 112 + 7;
+
+    pub fn try_new(params: TimedParams) -> Result<Self> {
+        let TimedParams {
+            end_time,
+            min_tickets_sold,
+            tickets_for_sale,
+            current_time,
+        } = params;
+
+        let new_timed = Self {
+            end_time,
+            min_tickets_sold,
+            tickets_for_sale,
+            reserved: [0; 112],
+            reserved2: [0; 7],
+        };
+
+        new_timed.validate(current_time)?;
+
+        Ok(new_timed)
+    }
+
+    fn validate(&self, current_time: i64) -> Result<()> {
+        require!(self.end_time > current_time, NexdrawErrors::ElapsedEndTime);
+
+        require!(self.min_tickets_sold > 0, NexdrawErrors::MinTicketsIsZero);
+
+        if let Some(tickets_for_sale) = self.tickets_for_sale {
+            require!(
+                tickets_for_sale >= self.min_tickets_sold,
+                NexdrawErrors::MinMaxTicketsCrossOver
+            );
+        }
+
+        Ok(())
+    }
+}use std::cmp;
+
+use anchor_lang::prelude::*;
+
+use crate::NexdrawErrors;
+
+/// Size of the prize enum is interpreted as the size of the largest variant
+/// (in this case, FixedAsset)
+/// 1 + 16 + 32
+#[derive(AnchorSerialize, AnchorDeserialize, Clone, PartialEq, Eq, Debug)]
+pub enum Prize {
+    Percentage {
+        value: u16,
+    },
+    Nft {
+        mint: Pubkey,
+    },
+    FixedAsset {
+        mint: Pubkey,
+        value: u64,
+    },
+}
+
+impl Prize {
+    const PERCENTAGE_SIZE: usize = 1 + 2;
+    const NFT_SIZE: usize = 1 + 32;
+    const FIXED_ASSET_SIZE: usize = 1 + 32 + 8;
+
+    pub fn size() -> usize {
+        // compare all sizes and return the largest one
+        cmp::max(Self::PERCENTAGE_SIZE, cmp::max(Self::NFT_SIZE, Self::FIXED_ASSET_SIZE))
+    }
+}
+
+#[derive(AnchorSerialize, AnchorDeserialize, Clone, PartialEq, Eq, Debug)]
+pub struct Prizes(Vec<Prize>);
+
+// Define a constant for the maximum allowable percentage
+#[constant]
+const MAX_PERCENTAGE: u16 = 1000; // Let's assume it's 100 for this example, adjust as needed
+
+impl Prizes {
+    pub fn size(max_size: usize) -> usize {
+        // 1 + 32 + 8
+        Prize::size() * max_size
+    }
+
+    pub fn new() -> Self {
+        Self(vec![])
+    }
+
+    pub fn len(&self) -> usize {
+        self.0.len()
+    }
+
+    pub fn add_prize(&mut self, prize: &Prize) {
+        match prize {
+            Prize::Percentage { value } => {
+                self.add_percentage(*value).unwrap();
+            }
+            Prize::Nft { mint } => {
+                self.add_nft(*mint).unwrap();
+            }
+            Prize::FixedAsset { mint, value } => {
+                self.add_fixed_asset(*mint, *value);
+            }
+        }
+    }
+
+    fn add_percentage(&mut self, value: u16) -> Result<()> {
+        let current_percentage = self.total_percentage();
+        if current_percentage + value > MAX_PERCENTAGE {
+            return Err(ProgramError::InvalidInstructionData.into()); // Adjust error as per your needs
+        }
+        self.0.push(Prize::Percentage { value });
+        Ok(())
+    }
+
+    fn add_nft(&mut self, mint: Pubkey) -> Result<()> {
+        if self.contains_nft(&mint) {
+            return Err(NexdrawErrors::NoNftDuplicates.into()); // Adjust error as per your needs
+        }
+        self.0.push(Prize::Nft { mint });
+        Ok(())
+    }
+
+    fn add_fixed_asset(&mut self, mint: Pubkey, value: u64) {
+        self.0.push(Prize::FixedAsset { mint, value });
+    }
+
+    fn contains_nft(&self, mint: &Pubkey) -> bool {
+        self.0.iter().any(|prize| {
+            match prize {
+                Prize::Nft { mint: existing_mint } => existing_mint == mint,
+                _ => false,
+            }
+        })
+    }
+
+    pub fn remove_prize(&mut self, prize: &Prize, index: usize) -> Result<()> {
+        if self.0.len() <= index {
+            return Err(ProgramError::InvalidInstructionData.into()); // Adjust error as per your needs
+        }
+        if &self.0[index] != prize {
+            return Err(ProgramError::InvalidInstructionData.into()); // Adjust error as per your needs
+        }
+        self.0.remove(index);
+        Ok(())
+    }
+
+    fn remove_by_index(&mut self, index: usize) -> Option<Prize> {
+        if index < self.0.len() { Some(self.0.remove(index)) } else { None }
+    }
+
+    fn total_percentage(&self) -> u16 {
+        self.0.iter().fold(0, |acc, prize| {
+            match prize {
+                Prize::Percentage { value } => acc + value,
+                _ => acc,
+            }
+        })
+    }
+}use super::capped_lottery::Capped;
+use super::timed_lottery::Timed;
+use anchor_lang::prelude::*;
+
+#[derive(AnchorSerialize, AnchorDeserialize, Clone, PartialEq, Eq, Debug)]
+pub enum LotteryStatus {
+    Concepting,
+    Live,
+    Drawing,
+    Claim,
+    Finalized,
+    Canceled,
+}
+
+impl LotteryStatus {
+    pub const SIZE: usize = 1; // enum discriminant
+}
+
+#[derive(AnchorSerialize, AnchorDeserialize, Clone, PartialEq, Eq, Debug)]
+pub enum DrawingStatus {
+    Progressing { index: u32 },
+    Incomplete { cleaned: bool },
+    Done,
+}
+
+impl DrawingStatus {
+    pub const SIZE: usize = 1 + 4; // enum discriminant + u32
+}
+
+#[derive(AnchorSerialize, AnchorDeserialize, Clone, PartialEq, Eq, Debug)]
+pub enum CancelStatus {
+    Refunding { tickets: u32 },
+    Done,
+}
+
+impl CancelStatus {
+    pub const SIZE: usize = 1 + 4; // enum discriminant + u32
+}
+
+#[derive(AnchorSerialize, AnchorDeserialize, Clone, PartialEq, Eq, Debug)]
+pub enum LotteryType {
+    Capped(Capped),
+    Timed(Timed),
+}
+
+impl LotteryType {
+    pub fn size() -> usize {
+        Capped::SIZE.max(Timed::SIZE) + 1 // enum discriminant
+    }
+}use anchor_lang::prelude::*;
+
+use crate::NexdrawErrors;
+
+#[derive(AnchorSerialize, AnchorDeserialize, Clone, PartialEq, Eq, Debug)]
+pub struct Capped {
+    maximum_duration: i64,
+    ticket_cap: u32,
+    reserved: [u8; 124],
+}
+
+impl Capped {
+    pub const SIZE: usize = 8 + 4 + 124;
+
+    pub fn new(maximum_duration: i64, ticket_cap: u32) -> Result<Self> {
+        let new_capped = Self {
+            maximum_duration,
+            ticket_cap,
+            reserved: [0; 124],
+        };
+
+        new_capped.validate()?;
+
+        Ok(new_capped)
+    }
+
+    fn validate(&self) -> Result<()> {
+        require!(self.maximum_duration > 0, NexdrawErrors::DurationisZero);
+
+        Ok(())
+    }
+}

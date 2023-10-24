@@ -116,23 +116,18 @@ export async function createUpdateDrawRegentTransaction(
  * Create the ix instance for the `update_draw_regent` instruction.
  * @export
  * @param {Program<Nexdraw>} program
- * @param {PublicKey} regent_key
- * @param {number} draws_remaining
- * @param {number} new_emperor_commission
+ * @param {number|null} [draws_remaining=null]
+ * @param {number|null} [new_emperor_commission=null]
  * @returns {Promise<TransactionInstruction>}
  *
  */
 export async function createUpdateDrawRegentInstruction(
   program: Program<Nexdraw>,
-  regent_key: PublicKey,
-  draws_remaining: number,
-  new_emperor_commission: number
+  draws_remaining: number | null = null,
+  new_emperor_commission: number | null = null
 ): Promise<TransactionInstruction> {
   if (!program.provider.publicKey) {
     throw new Error('no public key found on the program provider');
   }
-  return program.methods
-    .updateDrawRegent(regent_key, draws_remaining, new_emperor_commission)
-    .accounts({})
-    .instruction();
+  return program.methods.updateDrawRegent(draws_remaining, new_emperor_commission).accounts({}).instruction();
 }

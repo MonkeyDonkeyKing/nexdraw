@@ -7,6 +7,7 @@ import { buildAnonymousProvider } from './utils';
 import {
   createCreateDrawRegentTransaction,
   createInitializeEmperorTransaction,
+  createUpdateDrawRegentTransaction,
   createUpdateEmperorAuthorityTransaction
 } from './instructions';
 
@@ -114,8 +115,33 @@ export class NexDraw {
     return this._withParsedTransactionError(tx);
   }
 
+  /**
+   * creates a draw regent account
+   * @param regent_key
+   * @param draws_remaining
+   * @param commission
+   * @returns {Promise<string>}
+   * @memberof NexDraw
+   *
+   */
   async createDrawRegent(regent_key: PublicKey, draws_remaining: number, commission: number): Promise<string> {
     const tx = await createCreateDrawRegentTransaction(this.#program, regent_key, draws_remaining, commission);
+    return this._withParsedTransactionError(tx);
+  }
+
+  /**
+   * updates a draw regent account
+   * @param {number|null} [draws_remaining=null]
+   * @param {number|null} [new_emperor_commission=null]
+   * @returns {Promise<string>}
+   * @memberof NexDraw
+   *
+   */
+  async updateDrawRegent(
+    draws_remaining: number | null = null,
+    new_emperor_commission: number | null = null
+  ): Promise<string> {
+    const tx = await createUpdateDrawRegentTransaction(this.#program, draws_remaining, new_emperor_commission);
     return this._withParsedTransactionError(tx);
   }
 

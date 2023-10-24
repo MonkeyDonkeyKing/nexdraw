@@ -97,3 +97,42 @@ export async function createCreateDrawRegentInstruction(
   }
   return program.methods.createDrawRegent(regent_key, draws_remaining, commission).accounts({}).instruction();
 }
+
+/**
+ * Create a full transaction for `update_draw_regent`.
+ * @export
+ * @param {...Parameters<typeof createUpdateDrawRegentInstruction>} args
+ * @returns {Promise<Transaction>}
+ *
+ */
+export async function createUpdateDrawRegentTransaction(
+  ...args: Parameters<typeof createUpdateDrawRegentInstruction>
+): Promise<Transaction> {
+  const ix = await createUpdateDrawRegentInstruction(...args);
+  return new Transaction().add(ix);
+}
+
+/**
+ * Create the ix instance for the `update_draw_regent` instruction.
+ * @export
+ * @param {Program<Nexdraw>} program
+ * @param {PublicKey} regent_key
+ * @param {number} draws_remaining
+ * @param {number} new_emperor_commission
+ * @returns {Promise<TransactionInstruction>}
+ *
+ */
+export async function createUpdateDrawRegentInstruction(
+  program: Program<Nexdraw>,
+  regent_key: PublicKey,
+  draws_remaining: number,
+  new_emperor_commission: number
+): Promise<TransactionInstruction> {
+  if (!program.provider.publicKey) {
+    throw new Error('no public key found on the program provider');
+  }
+  return program.methods
+    .updateDrawRegent(regent_key, draws_remaining, new_emperor_commission)
+    .accounts({})
+    .instruction();
+}

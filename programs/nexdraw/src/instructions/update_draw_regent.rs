@@ -4,6 +4,8 @@ use anchor_lang::prelude::*;
 #[derive(Accounts)]
 #[instruction(regent_key: Pubkey)]
 pub struct UpdateDrawRegent<'info> {
+    pub draw_regent: Account<'info, DrawRegent>,
+
     ////////////////////////////////////////////////////////////////////////////
     // Auto derived below.
     ////////////////////////////////////////////////////////////////////////////
@@ -15,16 +17,10 @@ pub struct UpdateDrawRegent<'info> {
     pub emperor: Account<'info, Emperor>,
     #[account(mut)]
     pub authority: Signer<'info>,
-
-    #[account(
-        seeds = [b"draw_regent".as_ref(), regent_key.to_bytes().as_ref()],
-        bump
-    )]
-    pub draw_regent: Account<'info, DrawRegent>,
 }
 
 
-pub fn update_draw_regent_handler(ctx: Context<UpdateDrawRegent>, remaining_draws: Option<u32>, emperor_percent_commission: Option<u16>) -> Result<()> {
+pub fn update_draw_regent_handler(ctx: Context<UpdateDrawRegent>, updated_draws_left: Option<u32>, emperor_percent_commission: Option<u16>) -> Result<()> {
     let draw_regent = &mut ctx.accounts.draw_regent;
-    draw_regent.try_update(remaining_draws, emperor_percent_commission)
+    draw_regent.try_update(updated_draws_left, emperor_percent_commission)
 }

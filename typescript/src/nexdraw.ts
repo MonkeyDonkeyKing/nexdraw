@@ -161,6 +161,11 @@ export type Nexdraw = {
       ],
       "accounts": [
         {
+          "name": "drawRegent",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
           "name": "emperor",
           "isMut": false,
           "isSigner": false,
@@ -181,25 +186,6 @@ export type Nexdraw = {
           "name": "authority",
           "isMut": true,
           "isSigner": true
-        },
-        {
-          "name": "drawRegent",
-          "isMut": false,
-          "isSigner": false,
-          "pda": {
-            "seeds": [
-              {
-                "kind": "const",
-                "type": "string",
-                "value": "draw_regent"
-              },
-              {
-                "kind": "arg",
-                "type": "publicKey",
-                "path": "regent_key"
-              }
-            ]
-          }
         }
       ],
       "args": [
@@ -484,6 +470,11 @@ export const IDL: Nexdraw = {
       ],
       "accounts": [
         {
+          "name": "drawRegent",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
           "name": "emperor",
           "isMut": false,
           "isSigner": false,
@@ -504,25 +495,6 @@ export const IDL: Nexdraw = {
           "name": "authority",
           "isMut": true,
           "isSigner": true
-        },
-        {
-          "name": "drawRegent",
-          "isMut": false,
-          "isSigner": false,
-          "pda": {
-            "seeds": [
-              {
-                "kind": "const",
-                "type": "string",
-                "value": "draw_regent"
-              },
-              {
-                "kind": "arg",
-                "type": "publicKey",
-                "path": "regent_key"
-              }
-            ]
-          }
         }
       ],
       "args": [

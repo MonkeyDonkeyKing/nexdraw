@@ -131,6 +131,7 @@ export class NexDraw {
 
   /**
    * updates a draw regent account
+   * @param {PublicKey} draw_regent
    * @param {number|null} [draws_remaining=null]
    * @param {number|null} [new_emperor_commission=null]
    * @returns {Promise<string>}
@@ -138,10 +139,16 @@ export class NexDraw {
    *
    */
   async updateDrawRegent(
+    draw_regent: PublicKey,
     draws_remaining: number | null = null,
     new_emperor_commission: number | null = null
   ): Promise<string> {
-    const tx = await createUpdateDrawRegentTransaction(this.#program, draws_remaining, new_emperor_commission);
+    const tx = await createUpdateDrawRegentTransaction(
+      this.#program,
+      draw_regent,
+      draws_remaining,
+      new_emperor_commission
+    );
     return this._withParsedTransactionError(tx);
   }
 

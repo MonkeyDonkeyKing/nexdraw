@@ -123,11 +123,17 @@ export async function createUpdateDrawRegentTransaction(
  */
 export async function createUpdateDrawRegentInstruction(
   program: Program<Nexdraw>,
+  draw_regent: PublicKey,
   draws_remaining: number | null = null,
   new_emperor_commission: number | null = null
 ): Promise<TransactionInstruction> {
   if (!program.provider.publicKey) {
     throw new Error('no public key found on the program provider');
   }
-  return program.methods.updateDrawRegent(draws_remaining, new_emperor_commission).accounts({}).instruction();
+  return program.methods
+    .updateDrawRegent(draws_remaining, new_emperor_commission)
+    .accounts({
+      drawRegent: draw_regent
+    })
+    .instruction();
 }

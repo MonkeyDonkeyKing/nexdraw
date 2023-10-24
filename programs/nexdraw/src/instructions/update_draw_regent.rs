@@ -3,6 +3,7 @@ use anchor_lang::prelude::*;
 
 #[derive(Accounts)]
 pub struct UpdateDrawRegent<'info> {
+    #[account(mut)]
     pub draw_regent: Account<'info, DrawRegent>,
 
     ////////////////////////////////////////////////////////////////////////////

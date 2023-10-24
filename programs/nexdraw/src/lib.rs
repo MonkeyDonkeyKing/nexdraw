@@ -45,6 +45,11 @@ pub mod nexdraw {
     pub fn update_draw_regent(ctx: Context<UpdateDrawRegent>, draws_remaining: Option<u32>, new_emperor_commission: Option<u16>) -> Result<()> {
         update_draw_regent_handler(ctx, draws_remaining, new_emperor_commission)
     }
+    /// Creates a new timed solana ticketprice lottery
+    /// Only the draw regent can create lotteries
+    pub fn create_timed_sol_lottery(ctx: Context<CreateTimedSolLottery>, timed_params: TimedParams, ticket_price: u64) -> Result<()> {
+        create_timed_sol_lottery_handler(ctx, timed_params, ticket_price)
+    }
 }
 
 declare_id!("DRAWDnBHxRrointnFhaLEsexAXjgW2rUqZU7qpGqxonP");

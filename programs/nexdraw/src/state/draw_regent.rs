@@ -31,6 +31,14 @@ impl DrawRegent {
         })
     }
 
+    pub fn get_draw_id(&self) -> u32 {
+        self.next_draw_id
+    }
+
+    pub fn increase_draw_id(&mut self) {
+        self.next_draw_id += 1;
+    }
+
     pub fn try_update(&mut self, draws_remaining: Option<u32>, emperor_percent_commission: Option<u16>) -> Result<()> {
         if let Some(draws_remaining) = draws_remaining {
             self.draws_remaining = draws_remaining;

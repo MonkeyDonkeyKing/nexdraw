@@ -12,6 +12,6 @@ pub use lottery::Lottery;
 pub use lottery_info::LotteryInfo;
 pub use prizes::Prizes;
 pub use tickets::{ TicketInfo, TicketPrice };
-pub use timed_lottery::Timed;
+pub use timed_lottery::{Timed, TimedParams};
 pub use types::{ CancelStatus, DrawingStatus, LotteryStatus, LotteryType };
 pub use winners::Winner;

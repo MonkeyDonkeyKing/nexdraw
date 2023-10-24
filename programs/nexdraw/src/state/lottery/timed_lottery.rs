@@ -11,6 +11,7 @@ pub struct Timed {
     reserved2: [u8; 7],
 }
 
+#[derive(AnchorSerialize, AnchorDeserialize, Clone, PartialEq, Eq, Debug)]
 pub struct TimedParams {
     pub end_time: i64,
     pub min_tickets_sold: u32,

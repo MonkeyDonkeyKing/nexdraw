@@ -2,13 +2,13 @@ use crate::{DrawRegent, Emperor};
 use anchor_lang::prelude::*;
 
 #[derive(Accounts)]
-#[instruction(regent_key: Pubkey)]
 pub struct UpdateDrawRegent<'info> {
     pub draw_regent: Account<'info, DrawRegent>,
 
     ////////////////////////////////////////////////////////////////////////////
     // Auto derived below.
     ////////////////////////////////////////////////////////////////////////////
+    
     #[account(
         has_one = authority,
         seeds = [b"emperor".as_ref()],

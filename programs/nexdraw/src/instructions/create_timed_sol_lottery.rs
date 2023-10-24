@@ -13,7 +13,8 @@ pub struct CreateTimedSolLottery<'info> {
     #[account(
         seeds = [b"draw_regent".as_ref(), draw_manager.key().as_ref()],
         bump,
-        has_one = draw_manager
+        has_one = draw_manager,
+        mut,
     )]
     pub draw_regent: Account<'info, DrawRegent>,
 

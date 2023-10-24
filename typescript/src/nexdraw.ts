@@ -1,6 +1,13 @@
 export type Nexdraw = {
   "version": "0.0.1",
   "name": "nexdraw",
+  "constants": [
+    {
+      "name": "PERCENTAGE_PRECISION",
+      "type": "u16",
+      "value": "10_000"
+    }
+  ],
   "instructions": [
     {
       "name": "initializeEmperor",
@@ -241,6 +248,11 @@ export type Nexdraw = {
       "code": 6000,
       "name": "InvalidAuthority",
       "msg": "invalid authority provided"
+    },
+    {
+      "code": 6001,
+      "name": "InvalidPercentage",
+      "msg": "invalid percentage provided"
     }
   ]
 };
@@ -248,6 +260,13 @@ export type Nexdraw = {
 export const IDL: Nexdraw = {
   "version": "0.0.1",
   "name": "nexdraw",
+  "constants": [
+    {
+      "name": "PERCENTAGE_PRECISION",
+      "type": "u16",
+      "value": "10_000"
+    }
+  ],
   "instructions": [
     {
       "name": "initializeEmperor",
@@ -488,6 +507,11 @@ export const IDL: Nexdraw = {
       "code": 6000,
       "name": "InvalidAuthority",
       "msg": "invalid authority provided"
+    },
+    {
+      "code": 6001,
+      "name": "InvalidPercentage",
+      "msg": "invalid percentage provided"
     }
   ]
 };

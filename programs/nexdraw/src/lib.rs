@@ -44,7 +44,10 @@ pub mod nexdraw {
 declare_id!("DRAWDnBHxRrointnFhaLEsexAXjgW2rUqZU7qpGqxonP");
 
 #[error_code]
-pub enum CustomError {
+pub enum NexdrawErrors {
     #[msg("invalid authority provided")]
     InvalidAuthority,
+
+    #[msg("invalid percentage provided")]
+    InvalidPercentage,
 }

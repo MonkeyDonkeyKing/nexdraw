@@ -7,7 +7,7 @@ export class NexDrawBuilder {
   private _provider?: Provider;
   private _options?: ClientOptions;
   private _initialFunding?: number;
-  private _initializeAsDrawRegent?: { regentKey: PublicKey; drawsRemaining: number; commission: BN };
+  private _initializeAsDrawRegent?: { regentKey: PublicKey; drawsRemaining: number; commission: number };
   private _mainClient: NexDraw; // The main client with permissions to initialize as a drawRegent
 
   constructor(mainClient: NexDraw) {
@@ -29,7 +29,7 @@ export class NexDrawBuilder {
     return this;
   }
 
-  initializeAsDrawRegent(drawsRemaining: number, commission: BN): NexDrawBuilder {
+  initializeAsDrawRegent(drawsRemaining: number, commission: number): NexDrawBuilder {
     let regentKey = this._provider.publicKey;
     this._initializeAsDrawRegent = { regentKey, drawsRemaining, commission };
     return this;

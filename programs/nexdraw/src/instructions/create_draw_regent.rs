@@ -31,10 +31,10 @@ pub struct CreateDrawRegent<'info> {
 
 pub fn create_draw_regent_handler(ctx: Context<CreateDrawRegent>, regent_key: Pubkey, draws_left: u32, comission: u16) -> Result<()> {
     let draw_regent = &mut ctx.accounts.draw_regent;
-    **draw_regent = DrawRegent::new(
+    **draw_regent = DrawRegent::try_new(
         regent_key,
         draws_left,
         comission,
-    );
+    )?;
     Ok(())
 }

@@ -64,26 +64,38 @@ describe('draw_regent functionalities', () => {
         assert.strictEqual(e.error.errorMessage, 'A has one constraint was violated');
       }
     });
-    describe('check nexdrawbuilder regent correct', async () => {
-      let regent: NexDraw;
-      it('Builds a drawRegent', async () => {
-        regent = await new NexDrawBuilder(client)
-          .withProvider(createRandomProvider())
-          .withInitialFunding(10 * LAMPORTS_PER_SOL)
-          .initializeAsDrawRegent(5, new anchor.BN(0))
-          .build();
+  });
+  describe('check nexdrawbuilder regent correct', async () => {
+    let regent: NexDraw;
+    it('Builds a drawRegent', async () => {
+      regent = await new NexDrawBuilder(client)
+        .withProvider(createRandomProvider())
+        .withInitialFunding(10 * LAMPORTS_PER_SOL)
+        .initializeAsDrawRegent(5, 0)
+        .build();
+    });
+    it('Checks the drawRegent', async () => {
+      let drawRegentAccount = deriveDrawRegent(regent.provider.publicKey);
+      let drawRegentData = await regent.program.account.drawRegent.fetch(drawRegentAccount[0]);
+      assert.ok(drawRegentData.drawManager.equals(regent.provider.publicKey));
+      assert.ok(drawRegentData.emperorPercentCommission == 0);
+      assert.ok(drawRegentData.drawsRemaining == 5);
+      assert.ok(drawRegentData.nextDrawId == 0);
+      regent.provider.connection.getBalance(regent.provider.publicKey).then(balance => {
+        assert.ok(balance > 1 * LAMPORTS_PER_SOL);
       });
-      it('Checks the drawRegent', async () => {
-        let drawRegentAccount = deriveDrawRegent(regent.provider.publicKey);
-        let drawRegentData = await regent.program.account.drawRegent.fetch(drawRegentAccount[0]);
-        assert.ok(drawRegentData.drawManager.equals(regent.provider.publicKey));
-        assert.ok(drawRegentData.emperorPercentCommission == 0);
-        assert.ok(drawRegentData.drawsRemaining == 5);
-        assert.ok(drawRegentData.nextDrawId == 0);
-        regent.provider.connection.getBalance(regent.provider.publicKey).then(balance => {
-          assert.ok(balance > 1 * LAMPORTS_PER_SOL);
-        });
+    });
+  });
+  describe('another perc', async () => {
+    let drawRegent = anchor.web3.Keypair.generate();
+    let drawsRemaining = 5;
+    let commission = 10001;
+    it('calls initializeDrawRegent', async () => {
+      await client.createDrawRegent(drawRegent.publicKey, drawsRemaining, commission).catch(err => {
+        const e = err as anchor.AnchorError;
+        assert.ok(e.logs.reduce((prev, curr) => prev + curr).includes('InvalidPercentage'));
       });
+      await wait(1000);
     });
   });
 });

@@ -21,14 +21,13 @@ impl DrawRegent {
     + 2 // 2 bytes emperor percent commission
     + 70; // 70 bytes reserved
 
-    pub fn new(draw_manager: Pubkey, draws_remaining: u32, emperor_percent_commission: u16) -> Self {
-        Self {
+    pub fn try_new(draw_manager: Pubkey, draws_remaining: u32, emperor_percent_commission: u16) -> Result<Self> {
+        Ok(Self {
             draw_manager,
             next_draw_id: 0,
             draws_remaining,
-            emperor_percent_commission,
-            // emperor_percent_commission: PercentageHandler::new(emperor_percent_commission).value,
+            emperor_percent_commission: PercentageHandler::new(emperor_percent_commission).unwrap().value,
             _reserved: [0; 70],
-        }
+        })
     }
 }

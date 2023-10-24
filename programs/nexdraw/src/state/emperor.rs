@@ -21,7 +21,7 @@ impl Emperor {
     }
 
     pub fn update_authority(&mut self, new_authority: Pubkey) -> Result<()> {
-        require_keys_neq!(self.authority, new_authority, crate::CustomError::InvalidAuthority);
+        require_keys_neq!(self.authority, new_authority, crate::NexdrawErrors::InvalidAuthority);
         self.authority = new_authority;
         Ok(())
     }

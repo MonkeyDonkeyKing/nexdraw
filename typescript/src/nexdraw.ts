@@ -152,6 +152,70 @@ export type Nexdraw = {
           "type": "u16"
         }
       ]
+    },
+    {
+      "name": "updateDrawRegent",
+      "docs": [
+        "Updates the draw regent account",
+        "Only the emperor can update draw regents"
+      ],
+      "accounts": [
+        {
+          "name": "emperor",
+          "isMut": false,
+          "isSigner": false,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "type": "string",
+                "value": "emperor"
+              }
+            ]
+          },
+          "relations": [
+            "authority"
+          ]
+        },
+        {
+          "name": "authority",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "drawRegent",
+          "isMut": false,
+          "isSigner": false,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "type": "string",
+                "value": "draw_regent"
+              },
+              {
+                "kind": "arg",
+                "type": "publicKey",
+                "path": "regent_key"
+              }
+            ]
+          }
+        }
+      ],
+      "args": [
+        {
+          "name": "drawsRemaining",
+          "type": {
+            "option": "u32"
+          }
+        },
+        {
+          "name": "newEmperorCommission",
+          "type": {
+            "option": "u16"
+          }
+        }
+      ]
     }
   ],
   "accounts": [
@@ -409,6 +473,70 @@ export const IDL: Nexdraw = {
         {
           "name": "commission",
           "type": "u16"
+        }
+      ]
+    },
+    {
+      "name": "updateDrawRegent",
+      "docs": [
+        "Updates the draw regent account",
+        "Only the emperor can update draw regents"
+      ],
+      "accounts": [
+        {
+          "name": "emperor",
+          "isMut": false,
+          "isSigner": false,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "type": "string",
+                "value": "emperor"
+              }
+            ]
+          },
+          "relations": [
+            "authority"
+          ]
+        },
+        {
+          "name": "authority",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "drawRegent",
+          "isMut": false,
+          "isSigner": false,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "type": "string",
+                "value": "draw_regent"
+              },
+              {
+                "kind": "arg",
+                "type": "publicKey",
+                "path": "regent_key"
+              }
+            ]
+          }
+        }
+      ],
+      "args": [
+        {
+          "name": "drawsRemaining",
+          "type": {
+            "option": "u32"
+          }
+        },
+        {
+          "name": "newEmperorCommission",
+          "type": {
+            "option": "u16"
+          }
         }
       ]
     }

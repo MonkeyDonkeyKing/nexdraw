@@ -30,4 +30,14 @@ impl DrawRegent {
             _reserved: [0; 70],
         })
     }
+
+    pub fn try_update(&mut self, draws_remaining: Option<u32>, emperor_percent_commission: Option<u16>) -> Result<()> {
+        if let Some(draws_remaining) = draws_remaining {
+            self.draws_remaining = draws_remaining;
+        }
+        if let Some(emperor_percent_commission) = emperor_percent_commission {
+            self.emperor_percent_commission = PercentageHandler::new(emperor_percent_commission)?.value;
+        }
+        Ok(())
+    }
 }

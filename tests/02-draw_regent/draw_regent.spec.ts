@@ -82,5 +82,41 @@ describe('draw_regent functionalities', () => {
       });
     });
   });
-  describe('updateDrawRegent', async () => {});
+  describe('updateDrawRegent', async () => {
+    let drawRegent: NexDraw;
+    let drawRegentAccount: anchor.web3.PublicKey;
+    let drawsRemaining = 5;
+    let commission = 5;
+    it('Builds a drawRegent', async () => {
+      drawRegent = await new NexDrawBuilder(client)
+        .withProvider(createRandomProvider())
+        .withInitialFunding(10 * LAMPORTS_PER_SOL)
+        .initializeAsDrawRegent(drawsRemaining, commission)
+        .build();
+      drawRegentAccount = deriveDrawRegent(drawRegent.provider.publicKey)[0];
+    });
+    it('Updates drawRegent', async () => {
+      await client.updateDrawRegent(drawRegentAccount, drawsRemaining - 1, commission + 1);
+      await wait(1000);
+    });
+    it('Checks the drawRegent', async () => {
+      let drawRegentData = await drawRegent.program.account.drawRegent.fetch(drawRegentAccount);
+      assert.ok(drawRegentData.drawManager.equals(drawRegent.provider.publicKey));
+      assert.ok(drawRegentData.emperorPercentCommission == commission + 1);
+      assert.ok(drawRegentData.drawsRemaining == drawsRemaining - 1);
+      assert.ok(drawRegentData.nextDrawId == 0);
+    });
+    it('updates to invalid commission', async () => {
+      await client.updateDrawRegent(drawRegentAccount, drawsRemaining - 1, 10001).catch(err => {
+        const e = err as anchor.AnchorError;
+        assert.ok(e.logs.reduce((prev, curr) => prev + curr).includes('InvalidPercentage'));
+      });
+    });
+    it('updates with a negative drawsRemaining', async () => {
+      await client.updateDrawRegent(drawRegentAccount, -1, commission + 1).catch(err => {
+        const e = err as anchor.AnchorError;
+        assert.ok(e.logs.reduce((prev, curr) => prev + curr).includes('InvalidDrawsRemaining'));
+      });
+    });
+  });
 });

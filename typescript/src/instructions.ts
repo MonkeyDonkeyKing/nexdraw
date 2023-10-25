@@ -2,7 +2,7 @@ import { BN, Program } from '@coral-xyz/anchor';
 import type { Creator } from '@metaplex-foundation/js';
 import { type AccountMeta, PublicKey, Transaction, TransactionInstruction } from '@solana/web3.js';
 import type { Nexdraw } from './nexdraw';
-import { EMPEROR_ADDRESS } from './addresses';
+import { EMPEROR_ADDRESS, deriveDraw, deriveDrawRegent } from './addresses';
 import { IdlTimedParams, MethodParams } from './types';
 
 /**
@@ -80,7 +80,7 @@ export async function createCreateDrawRegentTransaction(
  *  Create the ix instance for the `create_draw_regent` instruction.
  * @export
  * @param {Program<Nexdraw>} program
- * @param {PublicKey} regent_key
+ * @param {PublicKey} new_regent
  * @param {number} draws_remaining
  * @param {number} commission
  * @returns {Promise<TransactionInstruction>}
@@ -88,14 +88,14 @@ export async function createCreateDrawRegentTransaction(
  */
 export async function createCreateDrawRegentInstruction(
   program: Program<Nexdraw>,
-  regent_key: PublicKey,
+  new_regent: PublicKey,
   draws_remaining: number,
   commission: number
 ): Promise<TransactionInstruction> {
   if (!program.provider.publicKey) {
     throw new Error('no public key found on the program provider');
   }
-  return program.methods.createDrawRegent(regent_key, draws_remaining, commission).accounts({}).instruction();
+  return program.methods.createDrawRegent(new_regent, draws_remaining, commission).accounts({}).instruction();
 }
 
 /**
@@ -139,35 +139,37 @@ export async function createUpdateDrawRegentInstruction(
 }
 
 /**
- * Create a full transaction for `create_timed_sol_lottery`.
+ * Create a full transaction for `create_timed_sol_draw`.
  * @export
  * @param {...Parameters<typeof createCreateDrawRegentInstruction>} args
  * @returns {Promise<Transaction>}
  *
  */
-export async function createCreateTimedSolLotteryTransaction(
-  ...args: Parameters<typeof createCreateTimedSolLotteryInstruction>
+export async function createCreateTimedSolDrawTransaction(
+  ...args: Parameters<typeof createCreateTimedSolDrawInstruction>
 ): Promise<Transaction> {
-  const ix = await createCreateTimedSolLotteryInstruction(...args);
+  const ix = await createCreateTimedSolDrawInstruction(...args);
   return new Transaction().add(ix);
 }
 
 /**
- *  Create the ix instance for the `create_timed_sol_lottery` instruction.
+ *  Create the ix instance for the `create_timed_sol_draw` instruction.
  * @export
  * @param {Program<Nexdraw>} program
  * @param {IdlTimedParams} timedParams
  * @param {BN} ticketPrice
+ * @param {number} drawId
  * @returns {Promise<TransactionInstruction>}
  *
  */
-export async function createCreateTimedSolLotteryInstruction(
+export async function createCreateTimedSolDrawInstruction(
   program: Program<Nexdraw>,
   timedParams: IdlTimedParams,
-  ticketPrice: BN
+  ticketPrice: BN,
+  drawId: number
 ): Promise<TransactionInstruction> {
   if (!program.provider.publicKey) {
     throw new Error('no public key found on the program provider');
   }
-  return program.methods.createTimedSolLottery(timedParams, ticketPrice).accounts({}).instruction();
+  return program.methods.createTimedSolDraw(timedParams, ticketPrice, drawId).accounts({}).instruction();
 }

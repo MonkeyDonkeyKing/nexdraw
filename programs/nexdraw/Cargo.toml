@@ -2,7 +2,7 @@
 name = "nexdraw"
 version = "0.0.1"
 edition = "2021"
-description = "A decentralized solana lottery application.."
+description = "A decentralized solana drawing application.."
 authors = ["MickSol"]
 
 [lib]

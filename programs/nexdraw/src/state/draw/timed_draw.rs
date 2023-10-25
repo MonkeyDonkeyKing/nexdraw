@@ -16,7 +16,6 @@ pub struct TimedParams {
     pub end_time: i64,
     pub min_tickets_sold: u32,
     pub tickets_for_sale: Option<u32>,
-    pub current_time: i64,
 }
 
 impl Timed {
@@ -27,7 +26,6 @@ impl Timed {
             end_time,
             min_tickets_sold,
             tickets_for_sale,
-            current_time,
         } = params;
 
         let new_timed = Self {
@@ -38,13 +36,13 @@ impl Timed {
             reserved2: [0; 7],
         };
 
-        new_timed.validate(current_time)?;
+        new_timed.validate()?;
 
         Ok(new_timed)
     }
 
-    fn validate(&self, current_time: i64) -> Result<()> {
-        require!(self.end_time > current_time, NexdrawErrors::ElapsedEndTime);
+    fn validate(&self) -> Result<()> {
+        require!(self.end_time > Clock::get()?.unix_timestamp, NexdrawErrors::ElapsedEndTime);
 
         require!(self.min_tickets_sold > 0, NexdrawErrors::MinTicketsIsZero);
 

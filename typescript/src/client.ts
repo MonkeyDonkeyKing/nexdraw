@@ -6,7 +6,7 @@ import { Connection, PublicKey, Transaction } from '@solana/web3.js';
 import { buildAnonymousProvider } from './utils';
 import {
   createCreateDrawRegentTransaction,
-  createCreateTimedSolLotteryTransaction,
+  createCreateTimedSolDrawTransaction,
   createInitializeEmperorTransaction,
   createUpdateDrawRegentTransaction,
   createUpdateEmperorAuthorityTransaction
@@ -119,15 +119,15 @@ export class NexDraw {
 
   /**
    * creates a draw regent account
-   * @param regent_key
+   * @param new_regent
    * @param draws_remaining
    * @param commission
    * @returns {Promise<string>}
    * @memberof NexDraw
    *
    */
-  async createDrawRegent(regent_key: PublicKey, draws_remaining: number, commission: number): Promise<string> {
-    const tx = await createCreateDrawRegentTransaction(this.#program, regent_key, draws_remaining, commission);
+  async createDrawRegent(new_regent: PublicKey, draws_remaining: number, commission: number): Promise<string> {
+    const tx = await createCreateDrawRegentTransaction(this.#program, new_regent, draws_remaining, commission);
     return this._withParsedTransactionError(tx);
   }
 
@@ -158,12 +158,13 @@ export class NexDraw {
    * creates a new draw
    * @param {IdlTimedParams} timedParams
    * @param {BN} ticketPrice
+   * @param {number} drawId
    * @returns {Promise<string>}
    * @memberof NexDraw
    *
    */
-  async createDraw(timedParams: IdlTimedParams, ticketPrice: BN): Promise<string> {
-    const tx = await createCreateTimedSolLotteryTransaction(this.#program, timedParams, ticketPrice);
+  async createDraw(timedParams: IdlTimedParams, ticketPrice: BN, drawId: number): Promise<string> {
+    const tx = await createCreateTimedSolDrawTransaction(this.#program, timedParams, ticketPrice, drawId);
     return this._withParsedTransactionError(tx);
   }
 

@@ -2,7 +2,7 @@ import * as anchor from '@coral-xyz/anchor';
 import { client, createRandomProvider, wait } from '../common';
 import { assert } from 'chai';
 import { EMPEROR_ADDRESS, deriveDrawRegent, NexDraw } from '../../typescript/src';
-import { Keypair, LAMPORTS_PER_SOL } from '@solana/web3.js';
+import { Keypair, LAMPORTS_PER_SOL, PublicKey } from '@solana/web3.js';
 import { NexDrawBuilder } from '../context_builder';
 
 describe('DrawRegent Functionality', () => {
@@ -85,8 +85,8 @@ describe('DrawRegent Functionality', () => {
   });
 
   describe('updateDrawRegent', () => {
-    let drawRegent;
-    let drawRegentAccount;
+    let drawRegent: NexDraw;
+    let drawRegentAccount: PublicKey;
     let drawsRemaining = 5;
     let commission = 5;
 

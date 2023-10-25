@@ -23,7 +23,7 @@ use state::*;
 pub mod nexdraw {
     use super::*;
     /// Creates the global owner of the program
-    /// Only the emperor can create lottery managers
+    /// Only the emperor can create draw managers
     pub fn initialize_emperor(ctx: Context<InitializeEmperor>) -> Result<()> {
         initialize_emperor_handler(ctx)
     }
@@ -45,10 +45,10 @@ pub mod nexdraw {
     pub fn update_draw_regent(ctx: Context<UpdateDrawRegent>, draws_remaining: Option<u32>, new_emperor_commission: Option<u16>) -> Result<()> {
         update_draw_regent_handler(ctx, draws_remaining, new_emperor_commission)
     }
-    /// Creates a new timed solana ticketprice lottery
+    /// Creates a new timed solana ticketprice draw
     /// Only the draw regent can create lotteries
-    pub fn create_timed_sol_lottery(ctx: Context<CreateTimedSolLottery>, timed_params: TimedParams, ticket_price: u64) -> Result<()> {
-        create_timed_sol_lottery_handler(ctx, timed_params, ticket_price)
+    pub fn create_timed_sol_draw(ctx: Context<CreateTimedSolDraw>, ticket_price: u64, timed_params: TimedParams, id: u32) -> Result<()> {
+        create_timed_sol_draw_handler(ctx, ticket_price, timed_params, id)
     }
 }
 

@@ -1,11 +1,11 @@
 use anchor_lang::prelude::*;
-use crate::{utils::PercentageHandler};
+use crate::utils::PercentageHandler;
 
 
 #[account]
 pub struct DrawRegent {
     pub draw_manager: Pubkey,
-    next_draw_id: u32,
+    pub next_draw_id: u32,
     draws_remaining: u32,
     /// decimal percentage representation of the commission
     emperor_percent_commission: u16,
@@ -29,10 +29,6 @@ impl DrawRegent {
             emperor_percent_commission: PercentageHandler::new(emperor_percent_commission).unwrap().value,
             _reserved: [0; 70],
         })
-    }
-
-    pub fn get_draw_id(&self) -> u32 {
-        self.next_draw_id
     }
 
     pub fn increase_draw_id(&mut self) {

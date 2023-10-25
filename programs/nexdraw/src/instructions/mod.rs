@@ -2,10 +2,10 @@ mod initialize_emperor;
 mod update_emperor;
 mod create_draw_regent;
 mod update_draw_regent;
-mod create_timed_sol_lottery;
+mod create_timed_sol_draw;
 
 pub use initialize_emperor::*;
 pub use update_emperor::*;
 pub use create_draw_regent::*;
 pub use update_draw_regent::*;
-pub use create_timed_sol_lottery::*;
+pub use create_timed_sol_draw::*;

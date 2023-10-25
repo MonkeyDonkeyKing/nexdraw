@@ -1,9 +1,9 @@
-use super::capped_lottery::Capped;
-use super::timed_lottery::Timed;
+use super::capped_draw::Capped;
+use super::timed_draw::Timed;
 use anchor_lang::prelude::*;
 
 #[derive(AnchorSerialize, AnchorDeserialize, Clone, PartialEq, Eq, Debug)]
-pub enum LotteryStatus {
+pub enum DrawStatus {
     Concepting,
     Live,
     Drawing,
@@ -12,7 +12,7 @@ pub enum LotteryStatus {
     Canceled,
 }
 
-impl LotteryStatus {
+impl DrawStatus {
     pub const SIZE: usize = 1; // enum byte
 }
 
@@ -38,12 +38,12 @@ impl CancelStatus {
 }
 
 #[derive(AnchorSerialize, AnchorDeserialize, Clone, PartialEq, Eq, Debug)]
-pub enum LotteryType {
+pub enum DrawType {
     Capped(Capped),
     Timed(Timed),
 }
 
-impl LotteryType {
+impl DrawType {
     pub fn size() -> usize {
         Capped::SIZE.max(Timed::SIZE) + 1 // enum byte
     }

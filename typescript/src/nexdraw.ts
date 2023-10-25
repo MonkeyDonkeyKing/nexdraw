@@ -18,7 +18,7 @@ export type Nexdraw = {
       "name": "initializeEmperor",
       "docs": [
         "Creates the global owner of the program",
-        "Only the emperor can create lottery managers"
+        "Only the emperor can create draw managers"
       ],
       "accounts": [
         {
@@ -209,9 +209,9 @@ export type Nexdraw = {
       ]
     },
     {
-      "name": "createTimedSolLottery",
+      "name": "createTimedSolDraw",
       "docs": [
-        "Creates a new timed solana ticketprice lottery",
+        "Creates a new timed solana ticketprice draw",
         "Only the draw regent can create lotteries"
       ],
       "accounts": [
@@ -222,7 +222,7 @@ export type Nexdraw = {
         },
         {
           "name": "drawRegent",
-          "isMut": false,
+          "isMut": true,
           "isSigner": false,
           "pda": {
             "seeds": [
@@ -243,7 +243,7 @@ export type Nexdraw = {
           ]
         },
         {
-          "name": "lottery",
+          "name": "draw",
           "isMut": true,
           "isSigner": false,
           "pda": {
@@ -251,7 +251,7 @@ export type Nexdraw = {
               {
                 "kind": "const",
                 "type": "string",
-                "value": "lottery"
+                "value": "draw"
               },
               {
                 "kind": "account",
@@ -260,10 +260,9 @@ export type Nexdraw = {
                 "path": "draw_regent"
               },
               {
-                "kind": "account",
-                "type": "publicKey",
-                "account": "DrawRegent",
-                "path": "draw_regent"
+                "kind": "arg",
+                "type": "u32",
+                "path": "id"
               }
             ]
           }
@@ -276,19 +275,81 @@ export type Nexdraw = {
       ],
       "args": [
         {
+          "name": "ticketPrice",
+          "type": "u64"
+        },
+        {
           "name": "timedParams",
           "type": {
             "defined": "TimedParams"
           }
         },
         {
-          "name": "ticketPrice",
-          "type": "u64"
+          "name": "id",
+          "type": "u32"
         }
       ]
     }
   ],
   "accounts": [
+    {
+      "name": "draw",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "manager",
+            "docs": [
+              "The pubkey of the draw manager."
+            ],
+            "type": "publicKey"
+          },
+          {
+            "name": "drawId",
+            "docs": [
+              "The id of the draw."
+            ],
+            "type": "u32"
+          },
+          {
+            "name": "drawInfo",
+            "docs": [
+              "Info about the draw."
+            ],
+            "type": {
+              "defined": "DrawInfo"
+            }
+          },
+          {
+            "name": "ticketInfo",
+            "docs": [
+              "The info about the tickets,"
+            ],
+            "type": {
+              "defined": "TicketInfo"
+            }
+          },
+          {
+            "name": "winners",
+            "type": {
+              "defined": "Winners"
+            }
+          },
+          {
+            "name": "reserved",
+            "docs": [
+              "Unused reservfe byte space for future changes"
+            ],
+            "type": {
+              "array": [
+                "u8",
+                64
+              ]
+            }
+          }
+        ]
+      }
+    },
     {
       "name": "drawRegent",
       "type": {
@@ -345,64 +406,6 @@ export type Nexdraw = {
           }
         ]
       }
-    },
-    {
-      "name": "lottery",
-      "type": {
-        "kind": "struct",
-        "fields": [
-          {
-            "name": "manager",
-            "docs": [
-              "The pubkey of the lottery manager."
-            ],
-            "type": "publicKey"
-          },
-          {
-            "name": "lotteryId",
-            "docs": [
-              "The id of the lottery."
-            ],
-            "type": "u32"
-          },
-          {
-            "name": "lotteryInfo",
-            "docs": [
-              "Info about the lottery."
-            ],
-            "type": {
-              "defined": "LotteryInfo"
-            }
-          },
-          {
-            "name": "ticketInfo",
-            "docs": [
-              "The info about the tickets,"
-            ],
-            "type": {
-              "defined": "TicketInfo"
-            }
-          },
-          {
-            "name": "winners",
-            "type": {
-              "defined": "Winners"
-            }
-          },
-          {
-            "name": "reserved",
-            "docs": [
-              "Unused reservfe byte space for future changes"
-            ],
-            "type": {
-              "array": [
-                "u8",
-                64
-              ]
-            }
-          }
-        ]
-      }
     }
   ],
   "types": [
@@ -432,20 +435,20 @@ export type Nexdraw = {
       }
     },
     {
-      "name": "LotteryInfo",
+      "name": "DrawInfo",
       "type": {
         "kind": "struct",
         "fields": [
           {
-            "name": "lotteryType",
+            "name": "drawType",
             "type": {
-              "defined": "LotteryType"
+              "defined": "DrawType"
             }
           },
           {
             "name": "status",
             "type": {
-              "defined": "LotteryStatus"
+              "defined": "DrawStatus"
             }
           },
           {
@@ -468,6 +471,22 @@ export type Nexdraw = {
             "name": "prizes",
             "type": {
               "defined": "Prizes"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "Prizes",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "prizes",
+            "type": {
+              "vec": {
+                "defined": "Prize"
+              }
             }
           }
         ]
@@ -549,10 +568,6 @@ export type Nexdraw = {
             "type": {
               "option": "u32"
             }
-          },
-          {
-            "name": "currentTime",
-            "type": "i64"
           }
         ]
       }
@@ -569,6 +584,22 @@ export type Nexdraw = {
           {
             "name": "claimed",
             "type": "bool"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Winners",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "winners",
+            "type": {
+              "vec": {
+                "defined": "Winner"
+              }
+            }
           }
         ]
       }
@@ -660,7 +691,7 @@ export type Nexdraw = {
       }
     },
     {
-      "name": "LotteryStatus",
+      "name": "DrawStatus",
       "type": {
         "kind": "enum",
         "variants": [
@@ -735,7 +766,7 @@ export type Nexdraw = {
       }
     },
     {
-      "name": "LotteryType",
+      "name": "DrawType",
       "type": {
         "kind": "enum",
         "variants": [
@@ -813,7 +844,7 @@ export const IDL: Nexdraw = {
       "name": "initializeEmperor",
       "docs": [
         "Creates the global owner of the program",
-        "Only the emperor can create lottery managers"
+        "Only the emperor can create draw managers"
       ],
       "accounts": [
         {
@@ -1004,9 +1035,9 @@ export const IDL: Nexdraw = {
       ]
     },
     {
-      "name": "createTimedSolLottery",
+      "name": "createTimedSolDraw",
       "docs": [
-        "Creates a new timed solana ticketprice lottery",
+        "Creates a new timed solana ticketprice draw",
         "Only the draw regent can create lotteries"
       ],
       "accounts": [
@@ -1017,7 +1048,7 @@ export const IDL: Nexdraw = {
         },
         {
           "name": "drawRegent",
-          "isMut": false,
+          "isMut": true,
           "isSigner": false,
           "pda": {
             "seeds": [
@@ -1038,7 +1069,7 @@ export const IDL: Nexdraw = {
           ]
         },
         {
-          "name": "lottery",
+          "name": "draw",
           "isMut": true,
           "isSigner": false,
           "pda": {
@@ -1046,7 +1077,7 @@ export const IDL: Nexdraw = {
               {
                 "kind": "const",
                 "type": "string",
-                "value": "lottery"
+                "value": "draw"
               },
               {
                 "kind": "account",
@@ -1055,10 +1086,9 @@ export const IDL: Nexdraw = {
                 "path": "draw_regent"
               },
               {
-                "kind": "account",
-                "type": "publicKey",
-                "account": "DrawRegent",
-                "path": "draw_regent"
+                "kind": "arg",
+                "type": "u32",
+                "path": "id"
               }
             ]
           }
@@ -1071,19 +1101,81 @@ export const IDL: Nexdraw = {
       ],
       "args": [
         {
+          "name": "ticketPrice",
+          "type": "u64"
+        },
+        {
           "name": "timedParams",
           "type": {
             "defined": "TimedParams"
           }
         },
         {
-          "name": "ticketPrice",
-          "type": "u64"
+          "name": "id",
+          "type": "u32"
         }
       ]
     }
   ],
   "accounts": [
+    {
+      "name": "draw",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "manager",
+            "docs": [
+              "The pubkey of the draw manager."
+            ],
+            "type": "publicKey"
+          },
+          {
+            "name": "drawId",
+            "docs": [
+              "The id of the draw."
+            ],
+            "type": "u32"
+          },
+          {
+            "name": "drawInfo",
+            "docs": [
+              "Info about the draw."
+            ],
+            "type": {
+              "defined": "DrawInfo"
+            }
+          },
+          {
+            "name": "ticketInfo",
+            "docs": [
+              "The info about the tickets,"
+            ],
+            "type": {
+              "defined": "TicketInfo"
+            }
+          },
+          {
+            "name": "winners",
+            "type": {
+              "defined": "Winners"
+            }
+          },
+          {
+            "name": "reserved",
+            "docs": [
+              "Unused reservfe byte space for future changes"
+            ],
+            "type": {
+              "array": [
+                "u8",
+                64
+              ]
+            }
+          }
+        ]
+      }
+    },
     {
       "name": "drawRegent",
       "type": {
@@ -1140,64 +1232,6 @@ export const IDL: Nexdraw = {
           }
         ]
       }
-    },
-    {
-      "name": "lottery",
-      "type": {
-        "kind": "struct",
-        "fields": [
-          {
-            "name": "manager",
-            "docs": [
-              "The pubkey of the lottery manager."
-            ],
-            "type": "publicKey"
-          },
-          {
-            "name": "lotteryId",
-            "docs": [
-              "The id of the lottery."
-            ],
-            "type": "u32"
-          },
-          {
-            "name": "lotteryInfo",
-            "docs": [
-              "Info about the lottery."
-            ],
-            "type": {
-              "defined": "LotteryInfo"
-            }
-          },
-          {
-            "name": "ticketInfo",
-            "docs": [
-              "The info about the tickets,"
-            ],
-            "type": {
-              "defined": "TicketInfo"
-            }
-          },
-          {
-            "name": "winners",
-            "type": {
-              "defined": "Winners"
-            }
-          },
-          {
-            "name": "reserved",
-            "docs": [
-              "Unused reservfe byte space for future changes"
-            ],
-            "type": {
-              "array": [
-                "u8",
-                64
-              ]
-            }
-          }
-        ]
-      }
     }
   ],
   "types": [
@@ -1227,20 +1261,20 @@ export const IDL: Nexdraw = {
       }
     },
     {
-      "name": "LotteryInfo",
+      "name": "DrawInfo",
       "type": {
         "kind": "struct",
         "fields": [
           {
-            "name": "lotteryType",
+            "name": "drawType",
             "type": {
-              "defined": "LotteryType"
+              "defined": "DrawType"
             }
           },
           {
             "name": "status",
             "type": {
-              "defined": "LotteryStatus"
+              "defined": "DrawStatus"
             }
           },
           {
@@ -1263,6 +1297,22 @@ export const IDL: Nexdraw = {
             "name": "prizes",
             "type": {
               "defined": "Prizes"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "Prizes",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "prizes",
+            "type": {
+              "vec": {
+                "defined": "Prize"
+              }
             }
           }
         ]
@@ -1344,10 +1394,6 @@ export const IDL: Nexdraw = {
             "type": {
               "option": "u32"
             }
-          },
-          {
-            "name": "currentTime",
-            "type": "i64"
           }
         ]
       }
@@ -1364,6 +1410,22 @@ export const IDL: Nexdraw = {
           {
             "name": "claimed",
             "type": "bool"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Winners",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "winners",
+            "type": {
+              "vec": {
+                "defined": "Winner"
+              }
+            }
           }
         ]
       }
@@ -1455,7 +1517,7 @@ export const IDL: Nexdraw = {
       }
     },
     {
-      "name": "LotteryStatus",
+      "name": "DrawStatus",
       "type": {
         "kind": "enum",
         "variants": [
@@ -1530,7 +1592,7 @@ export const IDL: Nexdraw = {
       }
     },
     {
-      "name": "LotteryType",
+      "name": "DrawType",
       "type": {
         "kind": "enum",
         "variants": [

@@ -33,7 +33,9 @@ impl Prize {
 }
 
 #[derive(AnchorSerialize, AnchorDeserialize, Clone, PartialEq, Eq, Debug)]
-pub struct Prizes(Vec<Prize>);
+pub struct Prizes {
+    pub prizes: Vec<Prize>,
+}
 
 // Define a constant for the maximum allowable percentage
 #[constant]
@@ -46,11 +48,11 @@ impl Prizes {
     }
 
     pub fn new() -> Self {
-        Self(vec![])
+        Self { prizes: vec![] }
     }
 
     pub fn len(&self) -> usize {
-        self.0.len()
+        self.prizes.len()
     }
 
     pub fn add_prize(&mut self, prize: &Prize) {
@@ -72,7 +74,7 @@ impl Prizes {
         if current_percentage + value > MAX_PERCENTAGE {
             return Err(ProgramError::InvalidInstructionData.into()); // Adjust error as per your needs
         }
-        self.0.push(Prize::Percentage { value });
+        self.prizes.push(Prize::Percentage { value });
         Ok(())
     }
 
@@ -80,16 +82,16 @@ impl Prizes {
         if self.contains_nft(&mint) {
             return Err(NexdrawErrors::NoNftDuplicates.into()); // Adjust error as per your needs
         }
-        self.0.push(Prize::Nft { mint });
+        self.prizes.push(Prize::Nft { mint });
         Ok(())
     }
 
     fn add_fixed_asset(&mut self, mint: Pubkey, value: u64) {
-        self.0.push(Prize::FixedAsset { mint, value });
+        self.prizes.push(Prize::FixedAsset { mint, value });
     }
 
     fn contains_nft(&self, mint: &Pubkey) -> bool {
-        self.0.iter().any(|prize| {
+        self.prizes.iter().any(|prize| {
             match prize {
                 Prize::Nft { mint: existing_mint } => existing_mint == mint,
                 _ => false,
@@ -98,22 +100,22 @@ impl Prizes {
     }
 
     pub fn remove_prize(&mut self, prize: &Prize, index: usize) -> Result<()> {
-        if self.0.len() <= index {
+        if self.prizes.len() <= index {
             return Err(ProgramError::InvalidInstructionData.into()); // Adjust error as per your needs
         }
-        if &self.0[index] != prize {
+        if &self.prizes[index] != prize {
             return Err(ProgramError::InvalidInstructionData.into()); // Adjust error as per your needs
         }
-        self.0.remove(index);
+        self.prizes.remove(index);
         Ok(())
     }
 
     fn remove_by_index(&mut self, index: usize) -> Option<Prize> {
-        if index < self.0.len() { Some(self.0.remove(index)) } else { None }
+        if index < self.prizes.len() { Some(self.prizes.remove(index)) } else { None }
     }
 
     fn total_percentage(&self) -> u16 {
-        self.0.iter().fold(0, |acc, prize| {
+        self.prizes.iter().fold(0, |acc, prize| {
             match prize {
                 Prize::Percentage { value } => acc + value,
                 _ => acc,

@@ -1,3 +1,4 @@
+import { BN } from '@coral-xyz/anchor';
 import { PublicKey } from '@solana/web3.js';
 
 export const PROGRAM_ID = new PublicKey('DRAWDnBHxRrointnFhaLEsexAXjgW2rUqZU7qpGqxonP');
@@ -22,4 +23,11 @@ export const EMPEROR_ADDRESS: [PublicKey, number] = PublicKey.findProgramAddress
  */
 export function deriveDrawRegent(drawManager: PublicKey): [PublicKey, number] {
   return PublicKey.findProgramAddressSync([Buffer.from('draw_regent'), drawManager.toBytes()], PROGRAM_ID);
+}
+
+export function deriveDraw(drawRegent: PublicKey, drawId: number): [PublicKey, number] {
+  return PublicKey.findProgramAddressSync(
+    [Buffer.from('draw'), drawRegent.toBytes(), new BN(drawId).toArrayLike(Buffer, 'le', 4)],
+    PROGRAM_ID
+  );
 }

@@ -19,7 +19,9 @@ impl Winner {
 
 
 #[derive(AnchorSerialize, AnchorDeserialize, Clone, PartialEq, Eq, Debug)]
-pub struct Winners(Vec<Winner>);
+pub struct Winners { 
+    pub winners: Vec<Winner>,
+}
 
 impl Winners {
     pub fn size(max_size: usize) -> usize {
@@ -27,23 +29,25 @@ impl Winners {
     }
 
     pub fn new() -> Self {
-        Self(vec![])
+        Self {
+            winners: vec![],
+        }
     }
 
     pub fn len(&self) -> usize {
-        self.0.len()
+        self.winners.len()
     }
 
     pub fn add_winner(&mut self, ticket_id: u32) -> Result<()> {
         if self.contains_ticket_id(ticket_id) {
             return Err(ProgramError::InvalidInstructionData.into()); // Ticket ID already a winner
         }
-        self.0.push(Winner::new(ticket_id));
+        self.winners.push(Winner::new(ticket_id));
         Ok(())
     }
 
     pub fn claim_winner(&mut self, ticket_id: u32) -> Result<()> {
-        if let Some(winner) = self.0.iter_mut().find(|w| w.ticket_id == ticket_id) {
+        if let Some(winner) = self.winners.iter_mut().find(|w| w.ticket_id == ticket_id) {
             if winner.claimed {
                 return Err(ProgramError::InvalidInstructionData.into()); // Ticket already claimed
             }
@@ -55,12 +59,12 @@ impl Winners {
     }
 
     pub fn is_claimed(&self, ticket_id: u32) -> bool {
-        self.0
+        self.winners
             .iter()
             .any(|winner| winner.ticket_id == ticket_id && winner.claimed)
     }
 
     fn contains_ticket_id(&self, ticket_id: u32) -> bool {
-        self.0.iter().any(|winner| winner.ticket_id == ticket_id)
+        self.winners.iter().any(|winner| winner.ticket_id == ticket_id)
     }
 }

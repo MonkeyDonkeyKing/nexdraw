@@ -6,7 +6,7 @@ use crate::utils::PercentageHandler;
 pub struct DrawRegent {
     pub draw_manager: Pubkey,
     pub next_draw_id: u32,
-    draws_remaining: u32,
+    pub draws_remaining: u32,
     /// decimal percentage representation of the commission
     emperor_percent_commission: u16,
     _reserved: [u8; 70],
@@ -29,10 +29,6 @@ impl DrawRegent {
             emperor_percent_commission: PercentageHandler::new(emperor_percent_commission).unwrap().value,
             _reserved: [0; 70],
         })
-    }
-
-    pub fn increase_draw_id(&mut self) {
-        self.next_draw_id += 1;
     }
 
     pub fn try_update(&mut self, draws_remaining: Option<u32>, emperor_percent_commission: Option<u16>) -> Result<()> {

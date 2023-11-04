@@ -156,15 +156,14 @@ export class NexDraw {
 
   /**
    * creates a new draw
-   * @param {IdlTimedParams} timedParams
    * @param {BN} ticketPrice
-   * @param {number} drawId
+   * @param {IdlTimedParams} timedParams
    * @returns {Promise<string>}
    * @memberof NexDraw
    *
    */
-  async createDraw(timedParams: IdlTimedParams, ticketPrice: BN, drawId: number): Promise<string> {
-    const tx = await createCreateTimedSolDrawTransaction(this.#program, timedParams, ticketPrice, drawId);
+  async createDraw(ticketPrice: BN, timedParams: IdlTimedParams): Promise<string> {
+    const tx = await createCreateTimedSolDrawTransaction(this.#program, ticketPrice, timedParams);
     return this._withParsedTransactionError(tx);
   }
 

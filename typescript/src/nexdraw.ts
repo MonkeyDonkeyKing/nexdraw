@@ -8,6 +8,11 @@ export type Nexdraw = {
       "value": "1000"
     },
     {
+      "name": "ONE_YEAR_IN_SECONDS",
+      "type": "i64",
+      "value": "31_536_000"
+    },
+    {
       "name": "PERCENTAGE_PRECISION",
       "type": "u16",
       "value": "10_000"
@@ -216,6 +221,32 @@ export type Nexdraw = {
       ],
       "accounts": [
         {
+          "name": "draw",
+          "isMut": true,
+          "isSigner": false,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "type": "string",
+                "value": "draw"
+              },
+              {
+                "kind": "account",
+                "type": "publicKey",
+                "account": "DrawRegent",
+                "path": "draw_regent"
+              },
+              {
+                "kind": "account",
+                "type": "u32",
+                "account": "DrawRegent",
+                "path": "draw_regent.next_draw_id"
+              }
+            ]
+          }
+        },
+        {
           "name": "drawManager",
           "isMut": true,
           "isSigner": true
@@ -243,31 +274,6 @@ export type Nexdraw = {
           ]
         },
         {
-          "name": "draw",
-          "isMut": true,
-          "isSigner": false,
-          "pda": {
-            "seeds": [
-              {
-                "kind": "const",
-                "type": "string",
-                "value": "draw"
-              },
-              {
-                "kind": "account",
-                "type": "publicKey",
-                "account": "DrawRegent",
-                "path": "draw_regent"
-              },
-              {
-                "kind": "arg",
-                "type": "u32",
-                "path": "id"
-              }
-            ]
-          }
-        },
-        {
           "name": "systemProgram",
           "isMut": false,
           "isSigner": false
@@ -283,10 +289,6 @@ export type Nexdraw = {
           "type": {
             "defined": "TimedParams"
           }
-        },
-        {
-          "name": "id",
-          "type": "u32"
         }
       ]
     }
@@ -521,6 +523,9 @@ export type Nexdraw = {
           },
           {
             "name": "minTicketsSold",
+            "docs": [
+              "this variable will always default to the length of the prizes array at launch"
+            ],
             "type": "u32"
           },
           {
@@ -807,18 +812,22 @@ export type Nexdraw = {
     },
     {
       "code": 6003,
-      "name": "DurationisZero"
+      "name": "EndTimeExceedsOneYear"
     },
     {
       "code": 6004,
-      "name": "MinTicketsIsZero"
+      "name": "DurationisZero"
     },
     {
       "code": 6005,
-      "name": "MinMaxTicketsCrossOver"
+      "name": "MinTicketsIsZero"
     },
     {
       "code": 6006,
+      "name": "MinMaxTicketsCrossOver"
+    },
+    {
+      "code": 6007,
       "name": "NoNftDuplicates"
     }
   ]
@@ -834,6 +843,11 @@ export const IDL: Nexdraw = {
       "value": "1000"
     },
     {
+      "name": "ONE_YEAR_IN_SECONDS",
+      "type": "i64",
+      "value": "31_536_000"
+    },
+    {
       "name": "PERCENTAGE_PRECISION",
       "type": "u16",
       "value": "10_000"
@@ -1042,6 +1056,32 @@ export const IDL: Nexdraw = {
       ],
       "accounts": [
         {
+          "name": "draw",
+          "isMut": true,
+          "isSigner": false,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "type": "string",
+                "value": "draw"
+              },
+              {
+                "kind": "account",
+                "type": "publicKey",
+                "account": "DrawRegent",
+                "path": "draw_regent"
+              },
+              {
+                "kind": "account",
+                "type": "u32",
+                "account": "DrawRegent",
+                "path": "draw_regent.next_draw_id"
+              }
+            ]
+          }
+        },
+        {
           "name": "drawManager",
           "isMut": true,
           "isSigner": true
@@ -1069,31 +1109,6 @@ export const IDL: Nexdraw = {
           ]
         },
         {
-          "name": "draw",
-          "isMut": true,
-          "isSigner": false,
-          "pda": {
-            "seeds": [
-              {
-                "kind": "const",
-                "type": "string",
-                "value": "draw"
-              },
-              {
-                "kind": "account",
-                "type": "publicKey",
-                "account": "DrawRegent",
-                "path": "draw_regent"
-              },
-              {
-                "kind": "arg",
-                "type": "u32",
-                "path": "id"
-              }
-            ]
-          }
-        },
-        {
           "name": "systemProgram",
           "isMut": false,
           "isSigner": false
@@ -1109,10 +1124,6 @@ export const IDL: Nexdraw = {
           "type": {
             "defined": "TimedParams"
           }
-        },
-        {
-          "name": "id",
-          "type": "u32"
         }
       ]
     }
@@ -1347,6 +1358,9 @@ export const IDL: Nexdraw = {
           },
           {
             "name": "minTicketsSold",
+            "docs": [
+              "this variable will always default to the length of the prizes array at launch"
+            ],
             "type": "u32"
           },
           {
@@ -1633,18 +1647,22 @@ export const IDL: Nexdraw = {
     },
     {
       "code": 6003,
-      "name": "DurationisZero"
+      "name": "EndTimeExceedsOneYear"
     },
     {
       "code": 6004,
-      "name": "MinTicketsIsZero"
+      "name": "DurationisZero"
     },
     {
       "code": 6005,
-      "name": "MinMaxTicketsCrossOver"
+      "name": "MinTicketsIsZero"
     },
     {
       "code": 6006,
+      "name": "MinMaxTicketsCrossOver"
+    },
+    {
+      "code": 6007,
       "name": "NoNftDuplicates"
     }
   ]

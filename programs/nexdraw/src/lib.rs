@@ -47,8 +47,8 @@ pub mod nexdraw {
     }
     /// Creates a new timed solana ticketprice draw
     /// Only the draw regent can create lotteries
-    pub fn create_timed_sol_draw(ctx: Context<CreateTimedSolDraw>, ticket_price: u64, timed_params: TimedParams, id: u32) -> Result<()> {
-        create_timed_sol_draw_handler(ctx, ticket_price, timed_params, id)
+    pub fn create_timed_sol_draw(ctx: Context<CreateTimedSolDraw>, ticket_price: u64, timed_params: TimedParams) -> Result<()> {
+        create_timed_sol_draw_handler(ctx, ticket_price, timed_params)
     }
 }
 
@@ -62,6 +62,7 @@ pub enum NexdrawErrors {
     InvalidPercentage,
 
     ElapsedEndTime,
+    EndTimeExceedsOneYear,
     DurationisZero,
     MinTicketsIsZero,
     MinMaxTicketsCrossOver,

@@ -3,8 +3,16 @@ use anchor_lang::prelude::*;
 use crate::{state::{DrawRegent, Draw, TimedParams, Timed, TicketPrice, TicketInfo}, instruction};
 
 #[derive(Accounts)]
-#[instruction(ticket_price: u64, timed_params: TimedParams, id: u32)]
 pub struct CreateTimedSolDraw<'info> {
+    #[account(
+        init,
+        space = Draw::size(10),
+        payer = draw_manager,
+        seeds = [b"draw".as_ref(), draw_regent.key().as_ref(), draw_regent.next_draw_id.to_le_bytes().as_ref()],
+        bump,
+    )]
+    pub draw: Account<'info, Draw>,
+
     ////////////////////////////////////////////////////////////////////////////
     // Auto derived below.
     ////////////////////////////////////////////////////////////////////////////
@@ -20,20 +28,12 @@ pub struct CreateTimedSolDraw<'info> {
     )]
     pub draw_regent: Account<'info, DrawRegent>,
 
-    #[account(
-        init,
-        space = Draw::size(10),
-        payer = draw_manager,
-        seeds = [b"draw".as_ref(), draw_regent.key().as_ref(), &id.to_le_bytes().as_ref()],
-        bump,
-        constraint = draw_regent.next_draw_id.to_le_bytes().as_ref() == id.to_le_bytes().as_ref() 
-    )]
-    pub draw: Account<'info, Draw>,
+
 
     pub system_program: Program<'info, System>,
 }
 
-pub fn create_timed_sol_draw_handler(ctx: Context<CreateTimedSolDraw>,ticket_price: u64, timed_params: TimedParams, id: u32) -> Result<()> {
+pub fn create_timed_sol_draw_handler(ctx: Context<CreateTimedSolDraw>,ticket_price: u64, timed_params: TimedParams) -> Result<()> {
     let draw_regent = &mut ctx.accounts.draw_regent;
     
 
@@ -47,6 +47,7 @@ pub fn create_timed_sol_draw_handler(ctx: Context<CreateTimedSolDraw>,ticket_pri
     )?;
     
     draw_regent.next_draw_id += 1;
+    draw_regent.draws_remaining -= 1;
 
     Ok(())
 }

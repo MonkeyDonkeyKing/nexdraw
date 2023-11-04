@@ -141,5 +141,4 @@ describe('DrawRegent Functionality', () => {
       }
     });
   });
-  // Additional main categories of tests can be added here...
 });

@@ -164,12 +164,20 @@ export async function createCreateTimedSolDrawTransaction(
  */
 export async function createCreateTimedSolDrawInstruction(
   program: Program<Nexdraw>,
-  timedParams: IdlTimedParams,
   ticketPrice: BN,
-  drawId: number
+  timedParams: IdlTimedParams
 ): Promise<TransactionInstruction> {
   if (!program.provider.publicKey) {
     throw new Error('no public key found on the program provider');
   }
-  return program.methods.createTimedSolDraw(timedParams, ticketPrice, drawId).accounts({}).instruction();
+  const regent = deriveDrawRegent(program.provider.publicKey)[0];
+  const regentData = await program.account.drawRegent.fetch(regent);
+  const draw = deriveDraw(regent, regentData.nextDrawId)[0];
+
+  return program.methods
+    .createTimedSolDraw(ticketPrice, timedParams)
+    .accounts({
+      draw
+    })
+    .instruction();
 }

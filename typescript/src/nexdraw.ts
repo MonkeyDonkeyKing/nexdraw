@@ -291,6 +291,87 @@ export type Nexdraw = {
           }
         }
       ]
+    },
+    {
+      "name": "addNftPrize",
+      "docs": [
+        "adds an nft prize to the draw",
+        "Only the draw regent can add nft prizes"
+      ],
+      "accounts": [
+        {
+          "name": "mint",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "metadata",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "masterEdition",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "receiverAta",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "senderAta",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "drawManager",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "drawRegent",
+          "isMut": true,
+          "isSigner": false,
+          "relations": [
+            "draw_manager"
+          ]
+        },
+        {
+          "name": "draw",
+          "isMut": true,
+          "isSigner": false,
+          "relations": [
+            "draw_regent"
+          ]
+        },
+        {
+          "name": "associatedTokenProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "tokenProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "metadataProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": [
+        {
+          "name": "nftPrize",
+          "type": "publicKey"
+        }
+      ]
     }
   ],
   "accounts": [
@@ -300,7 +381,7 @@ export type Nexdraw = {
         "kind": "struct",
         "fields": [
           {
-            "name": "manager",
+            "name": "drawRegent",
             "docs": [
               "The pubkey of the draw manager."
             ],
@@ -1126,6 +1207,87 @@ export const IDL: Nexdraw = {
           }
         }
       ]
+    },
+    {
+      "name": "addNftPrize",
+      "docs": [
+        "adds an nft prize to the draw",
+        "Only the draw regent can add nft prizes"
+      ],
+      "accounts": [
+        {
+          "name": "mint",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "metadata",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "masterEdition",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "receiverAta",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "senderAta",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "drawManager",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "drawRegent",
+          "isMut": true,
+          "isSigner": false,
+          "relations": [
+            "draw_manager"
+          ]
+        },
+        {
+          "name": "draw",
+          "isMut": true,
+          "isSigner": false,
+          "relations": [
+            "draw_regent"
+          ]
+        },
+        {
+          "name": "associatedTokenProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "tokenProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "metadataProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": [
+        {
+          "name": "nftPrize",
+          "type": "publicKey"
+        }
+      ]
     }
   ],
   "accounts": [
@@ -1135,7 +1297,7 @@ export const IDL: Nexdraw = {
         "kind": "struct",
         "fields": [
           {
-            "name": "manager",
+            "name": "drawRegent",
             "docs": [
               "The pubkey of the draw manager."
             ],

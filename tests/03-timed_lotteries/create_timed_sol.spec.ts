@@ -190,7 +190,7 @@ describe('TimedSolDraw Functionality', () => {
         }
         const regentManager = await regent.program.account.drawRegent.fetch(deriveDrawRegent(regent.provider.publicKey)[0]);
         const draws = await regent.program.account.draw.all();
-        const filtered = draws.filter((draw) => draw.account.manager.equals(deriveDrawRegent(regent.provider.publicKey)[0]));
+        const filtered = draws.filter((draw) => draw.account.drawRegent.equals(deriveDrawRegent(regent.provider.publicKey)[0]));
         assert.strictEqual(filtered.length, creates, 'Should only have 5 draws');
         assert.strictEqual(regentManager.drawsRemaining, amount - creates, 'Should have 0 draws remaining');
         assert.strictEqual(regentManager.nextDrawId, amount, 'Should have created 5 draws')
@@ -213,7 +213,7 @@ describe('TimedSolDraw Functionality', () => {
         }
         const regentManager = await regent.program.account.drawRegent.fetch(deriveDrawRegent(regent.provider.publicKey)[0]);
         const draws = await regent.program.account.draw.all();
-        const filtered = draws.filter((draw) => draw.account.manager.equals(deriveDrawRegent(regent.provider.publicKey)[0]));
+        const filtered = draws.filter((draw) => draw.account.drawRegent.equals(deriveDrawRegent(regent.provider.publicKey)[0]));
         assert.strictEqual(filtered.length, creates, 'Should only have 5 draws');
         assert.strictEqual(regentManager.nextDrawId, amount - creates, 'Should have 5 draws remaining');
         assert.strictEqual(regentManager.drawsRemaining, amount - creates, 'Should have created 5 draws');
@@ -241,7 +241,7 @@ describe('TimedSolDraw Functionality', () => {
         }
         const regentManager = await regent.program.account.drawRegent.fetch(deriveDrawRegent(regent.provider.publicKey)[0]);
         const draws = await regent.program.account.draw.all();
-        const filtered = draws.filter((draw) => draw.account.manager.equals(deriveDrawRegent(regent.provider.publicKey)[0]));
+        const filtered = draws.filter((draw) => draw.account.drawRegent.equals(deriveDrawRegent(regent.provider.publicKey)[0]));
         assert.strictEqual(filtered.length, amount, 'Should only have 5 draws');
         assert.strictEqual(regentManager.drawsRemaining, 0, 'Should have 0 draws remaining');
         assert.strictEqual(fails, 1, 'Should have 1 failed draw');

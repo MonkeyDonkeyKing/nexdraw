@@ -181,3 +181,43 @@ export async function createCreateTimedSolDrawInstruction(
     })
     .instruction();
 }
+
+// /**
+//  * Create a full transaction for the `add_prize` instruction.
+//  * @export
+//  * @param {...Parameters<typeof createAddPrizeInstruction>} args
+//  * @returns {Promise<Transaction>}
+//  *
+//  */
+// export async function createAddPrizeTransaction(
+//   ...args: Parameters<typeof createAddPrizeInstruction>
+// ): Promise<Transaction> {
+//   const ix = await createAddPrizeInstruction(...args);
+//   return new Transaction().add(ix);
+// }
+
+// /**
+//  * Create the ix instance for the `add_prize` instruction.
+//  * @export
+//  * @param {Program<Nexdraw>} program
+//  * @param {PublicKey} draw
+//  * @param {IdlPrizeParams} prizeParams
+//  * @returns {Promise<TransactionInstruction>}
+//  *
+//  */
+// export async function createAddPrizeInstruction(
+//   program: Program<Nexdraw>,
+//   draw: PublicKey,
+//   prizeParams: IdlPrizeParams
+// ): Promise<TransactionInstruction> {
+//   if (!program.provider.publicKey) {
+//     throw new Error('no public key found on the program provider');
+//   }
+
+//   return program.methods
+//     .addNftPrize(prizeParams)
+//     .accounts({
+//       draw
+//     })
+//     .instruction();
+// }

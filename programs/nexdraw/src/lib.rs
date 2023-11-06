@@ -36,19 +36,38 @@ pub mod nexdraw {
 
     /// Creates a new draw regent account
     /// Only the emperor can create draw regents
-    pub fn create_draw_regent(ctx: Context<CreateDrawRegent>, regent_key: Pubkey, draws_left: u32, commission: u16) -> Result<()> {
+    pub fn create_draw_regent(
+        ctx: Context<CreateDrawRegent>,
+        regent_key: Pubkey,
+        draws_left: u32,
+        commission: u16,
+    ) -> Result<()> {
         create_draw_regent_handler(ctx, regent_key, draws_left, commission)
     }
 
     /// Updates the draw regent account
     /// Only the emperor can update draw regents
-    pub fn update_draw_regent(ctx: Context<UpdateDrawRegent>, draws_remaining: Option<u32>, new_emperor_commission: Option<u16>) -> Result<()> {
+    pub fn update_draw_regent(
+        ctx: Context<UpdateDrawRegent>,
+        draws_remaining: Option<u32>,
+        new_emperor_commission: Option<u16>,
+    ) -> Result<()> {
         update_draw_regent_handler(ctx, draws_remaining, new_emperor_commission)
     }
     /// Creates a new timed solana ticketprice draw
     /// Only the draw regent can create lotteries
-    pub fn create_timed_sol_draw(ctx: Context<CreateTimedSolDraw>, ticket_price: u64, timed_params: TimedParams) -> Result<()> {
+    pub fn create_timed_sol_draw(
+        ctx: Context<CreateTimedSolDraw>,
+        ticket_price: u64,
+        timed_params: TimedParams,
+    ) -> Result<()> {
         create_timed_sol_draw_handler(ctx, ticket_price, timed_params)
+    }
+
+    /// adds an nft prize to the draw
+    /// Only the draw regent can add nft prizes
+    pub fn add_nft_prize(ctx: Context<AddNftPrize>, nft_prize: Pubkey) -> Result<()> {
+        add_nft_prize_handler(ctx, nft_prize)
     }
 }
 

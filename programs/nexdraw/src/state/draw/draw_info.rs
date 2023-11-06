@@ -1,23 +1,23 @@
 use anchor_lang::prelude::*;
 
-use super::{ CancelStatus, DrawingStatus, DrawStatus, DrawType, Prizes };
+use super::{CancelStatus, DrawStatus, DrawType, DrawingStatus, Prizes};
 
 #[derive(AnchorSerialize, AnchorDeserialize, Clone, PartialEq, Eq, Debug)]
 pub struct DrawInfo {
-    draw_type: DrawType,
-    status: DrawStatus,
-    drawing_status: Option<DrawingStatus>,
-    cancel_status: Option<CancelStatus>,
-    prizes: Prizes,
+    pub draw_type: DrawType,
+    pub status: DrawStatus,
+    pub drawing_status: Option<DrawingStatus>,
+    pub cancel_status: Option<CancelStatus>,
+    pub prizes: Prizes,
 }
 
 impl DrawInfo {
     pub fn size(max_prizes_size: usize) -> usize {
         DrawType::size() + // draw_type
-            DrawStatus::SIZE + // status
-            DrawingStatus::SIZE + // drawing_status
-            CancelStatus::SIZE + // cancel_status
-            Prizes::size(max_prizes_size) // prizes
+        DrawStatus::SIZE + // status
+        DrawingStatus::SIZE + // drawing_status
+        CancelStatus::SIZE + // cancel_status
+        Prizes::size(max_prizes_size) // prizes
     }
 
     pub fn new(draw_type: DrawType) -> Self {

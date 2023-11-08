@@ -356,22 +356,17 @@ export type Nexdraw = {
           "isSigner": false
         },
         {
-          "name": "metadataProgram",
+          "name": "systemProgram",
           "isMut": false,
           "isSigner": false
         },
         {
-          "name": "systemProgram",
+          "name": "rent",
           "isMut": false,
           "isSigner": false
         }
       ],
-      "args": [
-        {
-          "name": "nftPrize",
-          "type": "publicKey"
-        }
-      ]
+      "args": []
     }
   ],
   "accounts": [
@@ -1272,22 +1267,17 @@ export const IDL: Nexdraw = {
           "isSigner": false
         },
         {
-          "name": "metadataProgram",
+          "name": "systemProgram",
           "isMut": false,
           "isSigner": false
         },
         {
-          "name": "systemProgram",
+          "name": "rent",
           "isMut": false,
           "isSigner": false
         }
       ],
-      "args": [
-        {
-          "name": "nftPrize",
-          "type": "publicKey"
-        }
-      ]
+      "args": []
     }
   ],
   "accounts": [

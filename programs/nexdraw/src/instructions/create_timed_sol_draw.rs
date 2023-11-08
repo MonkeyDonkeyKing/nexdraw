@@ -1,9 +1,6 @@
 use anchor_lang::prelude::*;
 
-use crate::{
-    instruction,
-    state::{Draw, DrawRegent, TicketInfo, TicketPrice, Timed, TimedParams},
-};
+use crate::state::{Draw, DrawRegent, TicketInfo, TicketPrice, Timed, TimedParams};
 
 #[derive(Accounts)]
 pub struct CreateTimedSolDraw<'info> {

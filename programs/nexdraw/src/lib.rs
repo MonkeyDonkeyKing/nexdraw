@@ -66,8 +66,8 @@ pub mod nexdraw {
 
     /// adds an nft prize to the draw
     /// Only the draw regent can add nft prizes
-    pub fn add_nft_prize(ctx: Context<AddNftPrize>, nft_prize: Pubkey) -> Result<()> {
-        add_nft_prize_handler(ctx, nft_prize)
+    pub fn add_nft_prize(ctx: Context<AddNftPrize>) -> Result<()> {
+        add_nft_prize_handler(ctx)
     }
 }
 

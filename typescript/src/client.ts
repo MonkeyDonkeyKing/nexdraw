@@ -1,10 +1,11 @@
 import { parseIdlErrors, Program, translateError, type ProgramAccount, type Provider, BN } from '@coral-xyz/anchor';
 import { IDL, type Nexdraw } from './nexdraw';
 import { Metaplex, type JsonMetadata, type Metadata } from '@metaplex-foundation/js';
-import { PROGRAM_ID } from './addresses';
+import { PROGRAM_ID, deriveDrawRegent } from './addresses';
 import { Connection, PublicKey, Transaction } from '@solana/web3.js';
 import { buildAnonymousProvider } from './utils';
 import {
+  createAddPrizeTransaction,
   createCreateDrawRegentTransaction,
   createCreateTimedSolDrawTransaction,
   createInitializeEmperorTransaction,
@@ -95,6 +96,13 @@ export class NexDraw {
     return this.#provider;
   }
 
+  get drawRegent(): [PublicKey, number] {
+    if (!this.#provider.publicKey) {
+      throw new Error('no public key found on the program provider');
+    }
+    return deriveDrawRegent(this.#provider.publicKey);
+  }
+
   /**
    * initializes the emperor account
    * @returns {Promise<string>}
@@ -164,6 +172,19 @@ export class NexDraw {
    */
   async createDraw(ticketPrice: BN, timedParams: IdlTimedParams): Promise<string> {
     const tx = await createCreateTimedSolDrawTransaction(this.#program, ticketPrice, timedParams);
+    return this._withParsedTransactionError(tx);
+  }
+
+  /**
+   * Adds an nft prize to a draw
+   * @param {PublicKey} draw
+   * @param {PublicKey} nft
+   * @returns {Promise<string>}
+   * @memberof NexDraw
+   *
+   */
+  async addNftToDraw(draw: PublicKey, nft: PublicKey): Promise<string> {
+    const tx = await createAddPrizeTransaction(this.#program, draw, nft);
     return this._withParsedTransactionError(tx);
   }
 

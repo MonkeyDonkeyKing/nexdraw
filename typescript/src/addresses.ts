@@ -31,3 +31,18 @@ export function deriveDraw(drawRegent: PublicKey, drawId: number): [PublicKey, n
     PROGRAM_ID
   );
 }
+
+//// Metaplex Pdas
+export function deriveMetadata(mint: PublicKey) {
+  return PublicKey.findProgramAddressSync(
+    [Buffer.from('metadata'), TOKEN_METADATA_PROGRAM_ID.toBuffer(), mint.toBuffer()],
+    TOKEN_METADATA_PROGRAM_ID
+  );
+}
+
+export function deriveMasterEdition(mint: PublicKey) {
+  return PublicKey.findProgramAddressSync(
+    [Buffer.from('metadata'), TOKEN_METADATA_PROGRAM_ID.toBuffer(), mint.toBuffer(), Buffer.from('edition')],
+    TOKEN_METADATA_PROGRAM_ID
+  );
+}

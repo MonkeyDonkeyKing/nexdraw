@@ -8,7 +8,6 @@ use anchor_spl::{
 use crate::state::{Draw, DrawRegent, DrawStatus, Prize};
 
 #[derive(Accounts)]
-#[instruction(prize: Pubkey)]
 pub struct AddNftPrize<'info> {
     /*
        Token details
@@ -40,7 +39,7 @@ pub struct AddNftPrize<'info> {
         init,
         payer = draw_manager,
         associated_token::mint = mint,
-        associated_token::authority = draw_regent
+        associated_token::authority = draw
     )]
     pub receiver_ata: Box<Account<'info, TokenAccount>>,
     #[account(
@@ -53,11 +52,9 @@ pub struct AddNftPrize<'info> {
     /*
        Draw details
     */
-    // is the signer
     #[account(mut)]
     pub draw_manager: Signer<'info>,
     #[account(mut, has_one = draw_manager)]
-    // is the draw manager account of which the signer is the authority
     pub draw_regent: Account<'info, DrawRegent>,
     #[account(
         mut,
@@ -66,13 +63,15 @@ pub struct AddNftPrize<'info> {
         realloc::payer = draw_manager,
         realloc::zero = false,
     )]
-    // is the draw account of which the draw regent is the authority
     pub draw: Account<'info, Draw>,
 
+    /*
+        Programs
+    */
     pub associated_token_program: Program<'info, AssociatedToken>,
     pub token_program: Program<'info, Token>,
-    pub metadata_program: Program<'info, Metadata>,
     pub system_program: Program<'info, System>,
+    pub rent: Sysvar<'info, Rent>,
 }
 
 impl<'info> AddNftPrize<'info> {
@@ -87,10 +86,12 @@ impl<'info> AddNftPrize<'info> {
     }
 }
 
-pub fn add_nft_prize_handler(ctx: Context<AddNftPrize>, prize: Pubkey) -> Result<()> {
+pub fn add_nft_prize_handler(ctx: Context<AddNftPrize>) -> Result<()> {
     let draw = &mut ctx.accounts.draw;
     matches!(draw.draw_info.status, DrawStatus::Concepting);
-    draw.draw_info.prizes.add_prize(&Prize::Nft { mint: prize });
+    draw.draw_info.prizes.add_prize(&Prize::Nft {
+        mint: ctx.accounts.mint.to_account_info().key.clone(),
+    });
 
     token::transfer(ctx.accounts.transfer_token_accounts_ctx(), 1)?;
 

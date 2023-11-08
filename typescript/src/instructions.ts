@@ -2,8 +2,16 @@ import { BN, Program } from '@coral-xyz/anchor';
 import type { Creator } from '@metaplex-foundation/js';
 import { type AccountMeta, PublicKey, Transaction, TransactionInstruction } from '@solana/web3.js';
 import type { Nexdraw } from './nexdraw';
-import { EMPEROR_ADDRESS, deriveDraw, deriveDrawRegent } from './addresses';
+import {
+  EMPEROR_ADDRESS,
+  TOKEN_METADATA_PROGRAM_ID,
+  deriveDraw,
+  deriveDrawRegent,
+  deriveMasterEdition,
+  deriveMetadata
+} from './addresses';
 import { IdlTimedParams, MethodParams } from './types';
+import { getAssociatedTokenAddressSync } from '@solana/spl-token';
 
 /**
  * Create a full transaction for `initialize_emperor`.
@@ -182,42 +190,55 @@ export async function createCreateTimedSolDrawInstruction(
     .instruction();
 }
 
-// /**
-//  * Create a full transaction for the `add_prize` instruction.
-//  * @export
-//  * @param {...Parameters<typeof createAddPrizeInstruction>} args
-//  * @returns {Promise<Transaction>}
-//  *
-//  */
-// export async function createAddPrizeTransaction(
-//   ...args: Parameters<typeof createAddPrizeInstruction>
-// ): Promise<Transaction> {
-//   const ix = await createAddPrizeInstruction(...args);
-//   return new Transaction().add(ix);
-// }
+/**
+ * Create a full transaction for the `add_prize` instruction.
+ * @export
+ * @param {...Parameters<typeof createAddPrizeInstruction>} args
+ * @returns {Promise<Transaction>}
+ *
+ */
+export async function createAddPrizeTransaction(
+  ...args: Parameters<typeof createAddPrizeInstruction>
+): Promise<Transaction> {
+  const ix = await createAddPrizeInstruction(...args);
+  return new Transaction().add(ix);
+}
 
-// /**
-//  * Create the ix instance for the `add_prize` instruction.
-//  * @export
-//  * @param {Program<Nexdraw>} program
-//  * @param {PublicKey} draw
-//  * @param {IdlPrizeParams} prizeParams
-//  * @returns {Promise<TransactionInstruction>}
-//  *
-//  */
-// export async function createAddPrizeInstruction(
-//   program: Program<Nexdraw>,
-//   draw: PublicKey,
-//   prizeParams: IdlPrizeParams
-// ): Promise<TransactionInstruction> {
-//   if (!program.provider.publicKey) {
-//     throw new Error('no public key found on the program provider');
-//   }
+/**
+ * Create the ix instance for the `add_prize` instruction.
+ * @export
+ * @param {Program<Nexdraw>} program
+ * @param {PublicKey} draw
+ * @param {IdlPrizeParams} prizeParams
+ * @returns {Promise<TransactionInstruction>}
+ *
+ */
+export async function createAddPrizeInstruction(
+  program: Program<Nexdraw>,
+  draw: PublicKey,
+  mint: PublicKey
+): Promise<TransactionInstruction> {
+  if (!program.provider.publicKey) {
+    throw new Error('no public key found on the program provider');
+  }
+  const [metadata] = deriveMetadata(mint);
+  const [masterEdition] = deriveMasterEdition(mint);
+  const receiverAta = getAssociatedTokenAddressSync(mint, draw, true);
+  const senderAta = getAssociatedTokenAddressSync(mint, program.provider.publicKey);
+  const drawRegent = deriveDrawRegent(program.provider.publicKey)[0];
+  const drawManager = program.provider.publicKey;
 
-//   return program.methods
-//     .addNftPrize(prizeParams)
-//     .accounts({
-//       draw
-//     })
-//     .instruction();
-// }
+  return program.methods
+    .addNftPrize()
+    .accounts({
+      mint,
+      metadata,
+      masterEdition,
+      receiverAta,
+      senderAta,
+      drawManager,
+      drawRegent,
+      draw
+    })
+    .instruction();
+}

@@ -6,14 +6,16 @@ use anchor_lang::prelude::*;
 pub enum DrawStatus {
     Concepting,
     Live,
-    Drawing,
+    Drawing { drawing_status: DrawingStatus },
     Claim,
     Finalized,
-    Canceled,
+    Canceled { cancel_status: CancelStatus },
 }
 
 impl DrawStatus {
-    pub const SIZE: usize = 1; // enum byte
+    pub fn size() -> usize {
+        1 + std::cmp::max(DrawingStatus::SIZE, CancelStatus::SIZE)
+    }
 }
 
 #[derive(AnchorSerialize, AnchorDeserialize, Clone, PartialEq, Eq, Debug)]

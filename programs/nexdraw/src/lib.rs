@@ -64,10 +64,41 @@ pub mod nexdraw {
         create_timed_sol_draw_handler(ctx, ticket_price, timed_params)
     }
 
+    // /// Updates an existing timed solana ticketprice draw
+    // /// Only the draw regent can update lotteries and this is only possible if the draw has not started
+    // pub fn update_timed_sol_draw() -> Result<()> {
+    //     // will do this post MVP
+    //     todo!()
+    // }
+
     /// adds an nft prize to the draw
     /// Only the draw regent can add nft prizes
     pub fn add_nft_prize(ctx: Context<AddNftPrize>) -> Result<()> {
         add_nft_prize_handler(ctx)
+    }
+
+    /// adds pool prize to the draw this is either a sol or an spl token prize depending on the ticket price type
+    /// Only the draw regent can add pool prizes
+    pub fn add_pool_prize(ctx: Context<AddPoolPrize>, percentage: u16) -> Result<()> {
+        add_pool_prize_handler(ctx, percentage)
+    }
+
+    // /// adds a fixed token prize to the draw
+    // /// only the draw regent can add fixed token prizes
+    // pub fn add_fixed_token_prize() -> Result<()> {
+    //     // will do this post MVP
+    //     todo!()
+    // }
+
+    // pub fn remove_nft_prize(ctx: Context<RemoveNftPrize>, index: usize) -> Result<()> {}
+    // pub fn remove_pool_prize(ctx: Context<RemovePoolPrize>, index: usize) -> Result<()> {}
+    // pub fn remove_fixed_token_prize(ctx: Context<RemoveFixedTokenPrize>, index: usize) -> Result<()> {}
+    // pub fn delete_draw(ctx: Context<DeleteDraw>) -> Result<()> {}
+
+    /// starts the draw
+    /// Only the draw regent can start the draw
+    pub fn start_draw(ctx: Context<StartDraw>) -> Result<()> {
+        start_draw_handler(ctx)
     }
 }
 

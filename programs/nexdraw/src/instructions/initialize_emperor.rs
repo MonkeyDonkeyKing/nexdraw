@@ -6,12 +6,11 @@ pub struct InitializeEmperor<'info> {
     ////////////////////////////////////////////////////////////////////////////
     // Auto derived below.
     ////////////////////////////////////////////////////////////////////////////
-    
     #[account(
         init,
         space = Emperor::SIZE,
         payer = payer,
-        seeds = [b"emperor".as_ref()],
+        seeds = ["emperor".as_bytes()],
         bump
     )]
     pub emperor: Account<'info, Emperor>,
@@ -21,7 +20,6 @@ pub struct InitializeEmperor<'info> {
 
     pub system_program: Program<'info, System>,
 }
-
 
 pub fn initialize_emperor_handler(ctx: Context<InitializeEmperor>) -> Result<()> {
     let emperor = &mut ctx.accounts.emperor;

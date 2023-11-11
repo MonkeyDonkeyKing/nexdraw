@@ -18,11 +18,12 @@ impl TicketPrice {
         Self::Sol { value }
     }
 
-    /*      This is commented out because it's not yet supported in our program
-    // pub fn spl(mint: Pubkey, value: u64) -> Self {
-    //     Self::Spl { mint, value }
-    // }
-     */
+    /*
+       This is commented out because it's not yet supported in our program
+       pub fn spl(mint: Pubkey, value: u64) -> Self {
+           Self::Spl { mint, value }
+       }
+    */
 }
 
 #[derive(AnchorSerialize, AnchorDeserialize, Clone, PartialEq, Eq, Debug)]

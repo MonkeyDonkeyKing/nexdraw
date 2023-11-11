@@ -8,7 +8,7 @@ pub struct CreateTimedSolDraw<'info> {
         init,
         space = Draw::size(0),
         payer = draw_manager,
-        seeds = [b"draw".as_ref(), draw_regent.key().as_ref(), draw_regent.next_draw_id.to_le_bytes().as_ref()],
+        seeds = ["draw".as_bytes(), draw_regent.key().as_ref(), draw_regent.next_draw_id.to_le_bytes().as_ref()],
         bump,
     )]
     pub draw: Account<'info, Draw>,
@@ -20,7 +20,7 @@ pub struct CreateTimedSolDraw<'info> {
     pub draw_manager: Signer<'info>,
 
     #[account(
-        seeds = [b"draw_regent".as_ref(), draw_manager.key.as_ref()],
+        seeds = ["draw_regent".as_bytes(), draw_manager.key.as_ref()],
         bump,
         has_one = draw_manager,
         mut,

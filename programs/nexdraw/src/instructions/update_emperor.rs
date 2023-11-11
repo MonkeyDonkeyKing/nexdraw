@@ -6,10 +6,10 @@ pub struct UpdateEmperor<'info> {
     ////////////////////////////////////////////////////////////////////////////
     /// Auto derived below.
     /// ////////////////////////////////////////////////////////////////////////
-    
+
     #[account(
         mut,
-        seeds = [b"emperor".as_ref()],
+        seeds = ["emperor".as_bytes()],
         bump,
         has_one = authority,
     )]
@@ -17,7 +17,6 @@ pub struct UpdateEmperor<'info> {
     #[account(mut)]
     pub authority: Signer<'info>,
 }
-
 
 pub fn update_emperor_handler(ctx: Context<UpdateEmperor>, new_auhtority: Pubkey) -> Result<()> {
     let emperor = &mut ctx.accounts.emperor;

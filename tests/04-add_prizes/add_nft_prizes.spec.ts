@@ -1,14 +1,15 @@
 import * as anchor from '@coral-xyz/anchor';
 import { client, createRandomProvider, wait } from '../common';
 import { assert } from 'chai';
-import { NexDraw, createAddPrizeInstruction, deriveDraw, deriveDrawRegent } from '../../typescript/src';
+import { NexDraw, createAddPoolPrizeInstruction, createAddPrizeInstruction, deriveDraw, deriveDrawRegent } from '../../typescript/src';
 import { LAMPORTS_PER_SOL, PublicKey } from '@solana/web3.js';
 import { NexDrawBuilder } from '../context_builder';
 import createNft from '../testingutils/createNft';
 import { getAssociatedTokenAddressSync } from '@solana/spl-token';
 
-describe('TimedSolDraw Functionality', () => {
-  it('adds a prize to a lottery concept', async () => {
+describe('TimedSolDraw add nft prize functionality', () => {
+  
+  it('adds a nft prize to a lottery concept', async () => {
     const regent = await new NexDrawBuilder(client)
       .withProvider(createRandomProvider())
       .withInitialFunding(10 * LAMPORTS_PER_SOL)

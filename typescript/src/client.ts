@@ -215,6 +215,19 @@ export class NexDraw {
     return this._withParsedTransactionError(tx);
   }
 
+    /**
+   * Adds an pool prize to a draw
+   * @param {PublicKey} draw
+   * @param {number} prize
+   * @returns {Promise<string>}
+   * @memberof NexDraw
+   *
+   */
+    async addPoolPrizeToDraw(draw: PublicKey, prize: number): Promise<string> {
+      const tx = await createAddPoolPrizeTransaction(this.#program, draw, prize);
+      return this._withParsedTransactionError(tx);
+    }
+
   private async _withParsedTransactionError(tx: Transaction): Promise<string> {
     try {
       return await this.#provider.sendAndConfirm!(tx);

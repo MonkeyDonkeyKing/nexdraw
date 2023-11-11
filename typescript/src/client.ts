@@ -14,7 +14,7 @@ import {
   createUpdateDrawRegentTransaction,
   createUpdateEmperorAuthorityTransaction
 } from './instructions';
-import { IdlTimedParams } from './types';
+import { IdlTimedParams, startDrawParams } from './types';
 
 const idlErrors = parseIdlErrors(IDL);
 
@@ -206,16 +206,17 @@ export class NexDraw {
   /**
    * Starts a draw
    * @param {PublicKey} draw
+   * @param {startDrawParams} nftParams
    * @returns {Promise<string>}
    * @memberof NexDraw
    *
    */
-  async startDraw(draw: PublicKey): Promise<string> {
-    const tx = await createStartDrawTransaction(this.#program, draw);
+  async startDraw(draw: PublicKey, nftParams: startDrawParams): Promise<string> {
+    const tx = await createStartDrawTransaction(this.#program, draw, nftParams);
     return this._withParsedTransactionError(tx);
   }
 
-    /**
+  /**
    * Adds an pool prize to a draw
    * @param {PublicKey} draw
    * @param {number} prize
@@ -223,10 +224,10 @@ export class NexDraw {
    * @memberof NexDraw
    *
    */
-    async addPoolPrizeToDraw(draw: PublicKey, prize: number): Promise<string> {
-      const tx = await createAddPoolPrizeTransaction(this.#program, draw, prize);
-      return this._withParsedTransactionError(tx);
-    }
+  async addPoollPrizeToDraw(draw: PublicKey, prize: number): Promise<string> {
+    const tx = await createAddPoolPrizeTransaction(this.#program, draw, prize);
+    return this._withParsedTransactionError(tx);
+  }
 
   private async _withParsedTransactionError(tx: Transaction): Promise<string> {
     try {

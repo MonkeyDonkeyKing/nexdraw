@@ -6,11 +6,12 @@ import {
   EMPEROR_ADDRESS,
   TOKEN_METADATA_PROGRAM_ID,
   deriveDraw,
+  deriveDrawMint,
   deriveDrawRegent,
   deriveMasterEdition,
   deriveMetadata
 } from './addresses';
-import { IdlTimedParams, MethodParams } from './types';
+import { IdlTimedParams, MethodParams, startDrawParams } from './types';
 import { getAssociatedTokenAddressSync } from '@solana/spl-token';
 import { z } from 'zod';
 
@@ -308,21 +309,31 @@ export async function createStartDrawTransaction(
  * @export
  * @param {Program<Nexdraw>} program
  * @param {PublicKey} draw
+ * @param {startDrawParams} params
  * @returns {Promise<TransactionInstruction>}
  *
  */
 export async function createStartDrawInstruction(
   program: Program<Nexdraw>,
-  draw: PublicKey
+  draw: PublicKey,
+  params: startDrawParams
 ): Promise<TransactionInstruction> {
   if (!program.provider.publicKey) {
     throw new Error('no public key found on the program provider');
   }
+  const [mint] = deriveDrawMint(draw);
+  const [metadata] = deriveMetadata(mint);
+  const [masterEdition] = deriveMasterEdition(mint);
+  const tokenAccount = getAssociatedTokenAddressSync(mint, draw, true);
 
   return program.methods
-    .startDraw()
+    .startDraw(params)
     .accounts({
-      draw
+      draw,
+      metadata,
+      masterEdition,
+      tokenAccount,
+      metadataProgram: TOKEN_METADATA_PROGRAM_ID
     })
     .instruction();
 }

@@ -97,8 +97,14 @@ pub mod nexdraw {
 
     /// starts the draw
     /// Only the draw regent can start the draw
-    pub fn start_draw(ctx: Context<StartDraw>) -> Result<()> {
-        start_draw_handler(ctx)
+    pub fn start_draw(ctx: Context<StartDraw>, nft_params: StartDrawParams) -> Result<()> {
+        start_draw_handler(ctx, nft_params)
+    }
+
+    /// buys a ticket for the draw
+    /// Anyone can buy a ticket
+    pub fn buy_ticket(ctx: Context<BuyTicket>, ticket_id: u32) -> Result<()> {
+        buy_ticket_handler(ctx, ticket_id)
     }
 }
 
@@ -117,4 +123,5 @@ pub enum NexdrawErrors {
     MinTicketsIsZero,
     MinMaxTicketsCrossOver,
     NoNftDuplicates,
+    ExceedMaxTicketId,
 }

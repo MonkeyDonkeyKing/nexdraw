@@ -1,15 +1,14 @@
 import * as anchor from '@coral-xyz/anchor';
 import { client, createRandomProvider, wait } from '../common';
 import { assert } from 'chai';
-import { NexDraw, createAddPoolPrizeInstruction, createAddPrizeInstruction, deriveDraw, deriveDrawRegent } from '../../typescript/src';
+import { createAddNftPrizeInstruction, deriveDraw } from '../../typescript/src';
 import { LAMPORTS_PER_SOL, PublicKey } from '@solana/web3.js';
 import { NexDrawBuilder } from '../context_builder';
 import createNft from '../testingutils/createNft';
 import { getAssociatedTokenAddressSync } from '@solana/spl-token';
 
-describe('TimedSolDraw add nft prize functionality', () => {
-  
-  it('adds a nft prize to a lottery concept', async () => {
+describe('TimedSolDraw Functionality', () => {
+  it('adds a prize to a draw concept', async () => {
     const regent = await new NexDrawBuilder(client)
       .withProvider(createRandomProvider())
       .withInitialFunding(10 * LAMPORTS_PER_SOL)
@@ -28,8 +27,8 @@ describe('TimedSolDraw add nft prize functionality', () => {
     await regent.createDraw(ticketPrice, timedParams);
     const drawRegent = regent.drawRegent;
     const drawPubkey = deriveDraw(drawRegent[0], 0);
-    const prizeix = await createAddPrizeInstruction(regent.program, drawPubkey[0], nft.mintAddress!);
-    const res = await regent.addNftToDraw(drawPubkey[0], nft.mintAddress!);
+    const prizeix = await createAddNftPrizeInstruction(regent.program, drawPubkey[0], nft.mintAddress!);
+    const res = await regent.addNftPrizeToDraw(drawPubkey[0], nft.mintAddress!);
     // check the token balance of the draw
     const draw = await regent.program.account.draw.fetch(drawPubkey[0]);
     assert.strictEqual(draw.drawInfo.prizes.prizes.length, 1);
@@ -38,5 +37,20 @@ describe('TimedSolDraw add nft prize functionality', () => {
     const associatedMint = await regent.provider.connection.getParsedAccountInfo(associatedMintPubkey);
     // @ts-expect-error
     assert.strictEqual(associatedMint.value.data.parsed.info.tokenAmount.uiAmount, 1);
+    // const a = await createStartDrawInstruction(regent.program, drawPubkey[0], {
+    //   name: 'test',
+    //   uri: 'test',
+    //   symbol: 'test'
+    // }).catch(err => {
+    //   console.log(err);
+    // });
+    await regent
+      .startDraw(drawPubkey[0], { name: 'test', uri: 'test', symbol: 'test' })
+      .catch(err => {
+        console.log(err);
+      })
+      .then(res => {
+        console.log(res);
+      });
   });
 });

@@ -422,6 +422,96 @@ export type Nexdraw = {
       ],
       "accounts": [
         {
+          "name": "mint",
+          "isMut": true,
+          "isSigner": false,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "type": "string",
+                "value": "draw_mint"
+              },
+              {
+                "kind": "account",
+                "type": "publicKey",
+                "account": "Draw",
+                "path": "draw"
+              }
+            ]
+          }
+        },
+        {
+          "name": "metadata",
+          "isMut": true,
+          "isSigner": false,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "type": "string",
+                "value": "metadata"
+              },
+              {
+                "kind": "account",
+                "type": "publicKey",
+                "path": "metadata_program"
+              },
+              {
+                "kind": "account",
+                "type": "publicKey",
+                "account": "Mint",
+                "path": "mint"
+              }
+            ],
+            "programId": {
+              "kind": "account",
+              "type": "publicKey",
+              "path": "metadata_program"
+            }
+          }
+        },
+        {
+          "name": "masterEdition",
+          "isMut": true,
+          "isSigner": false,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "type": "string",
+                "value": "metadata"
+              },
+              {
+                "kind": "account",
+                "type": "publicKey",
+                "path": "metadata_program"
+              },
+              {
+                "kind": "account",
+                "type": "publicKey",
+                "account": "Mint",
+                "path": "mint"
+              },
+              {
+                "kind": "const",
+                "type": "string",
+                "value": "edition"
+              }
+            ],
+            "programId": {
+              "kind": "account",
+              "type": "publicKey",
+              "path": "metadata_program"
+            }
+          }
+        },
+        {
+          "name": "tokenAccount",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
           "name": "drawManager",
           "isMut": true,
           "isSigner": true
@@ -430,6 +520,20 @@ export type Nexdraw = {
           "name": "drawRegent",
           "isMut": true,
           "isSigner": false,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "type": "string",
+                "value": "draw_regent"
+              },
+              {
+                "kind": "account",
+                "type": "publicKey",
+                "path": "draw_manager"
+              }
+            ]
+          },
           "relations": [
             "draw_manager"
           ]
@@ -438,12 +542,95 @@ export type Nexdraw = {
           "name": "draw",
           "isMut": true,
           "isSigner": false,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "type": "string",
+                "value": "draw"
+              },
+              {
+                "kind": "account",
+                "type": "publicKey",
+                "account": "Draw",
+                "path": "draw.draw_regent"
+              },
+              {
+                "kind": "account",
+                "type": "u32",
+                "account": "Draw",
+                "path": "draw.draw_id"
+              }
+            ]
+          },
           "relations": [
             "draw_regent"
           ]
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "tokenProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "associatedTokenProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "rent",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "metadataProgram",
+          "isMut": false,
+          "isSigner": false
         }
       ],
-      "args": []
+      "args": [
+        {
+          "name": "nftParams",
+          "type": {
+            "defined": "StartDrawParams"
+          }
+        }
+      ]
+    },
+    {
+      "name": "buyTicket",
+      "docs": [
+        "buys a ticket for the draw",
+        "Anyone can buy a ticket"
+      ],
+      "accounts": [
+        {
+          "name": "draw",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "rent",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": [
+        {
+          "name": "ticketId",
+          "type": "u32"
+        }
+      ]
     }
   ],
   "accounts": [
@@ -564,6 +751,26 @@ export type Nexdraw = {
     }
   ],
   "types": [
+    {
+      "name": "StartDrawParams",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "name",
+            "type": "string"
+          },
+          {
+            "name": "symbol",
+            "type": "string"
+          },
+          {
+            "name": "uri",
+            "type": "string"
+          }
+        ]
+      }
+    },
     {
       "name": "Capped",
       "type": {
@@ -982,6 +1189,10 @@ export type Nexdraw = {
     {
       "code": 6007,
       "name": "NoNftDuplicates"
+    },
+    {
+      "code": 6008,
+      "name": "ExceedMaxTicketId"
     }
   ]
 };
@@ -1410,6 +1621,96 @@ export const IDL: Nexdraw = {
       ],
       "accounts": [
         {
+          "name": "mint",
+          "isMut": true,
+          "isSigner": false,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "type": "string",
+                "value": "draw_mint"
+              },
+              {
+                "kind": "account",
+                "type": "publicKey",
+                "account": "Draw",
+                "path": "draw"
+              }
+            ]
+          }
+        },
+        {
+          "name": "metadata",
+          "isMut": true,
+          "isSigner": false,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "type": "string",
+                "value": "metadata"
+              },
+              {
+                "kind": "account",
+                "type": "publicKey",
+                "path": "metadata_program"
+              },
+              {
+                "kind": "account",
+                "type": "publicKey",
+                "account": "Mint",
+                "path": "mint"
+              }
+            ],
+            "programId": {
+              "kind": "account",
+              "type": "publicKey",
+              "path": "metadata_program"
+            }
+          }
+        },
+        {
+          "name": "masterEdition",
+          "isMut": true,
+          "isSigner": false,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "type": "string",
+                "value": "metadata"
+              },
+              {
+                "kind": "account",
+                "type": "publicKey",
+                "path": "metadata_program"
+              },
+              {
+                "kind": "account",
+                "type": "publicKey",
+                "account": "Mint",
+                "path": "mint"
+              },
+              {
+                "kind": "const",
+                "type": "string",
+                "value": "edition"
+              }
+            ],
+            "programId": {
+              "kind": "account",
+              "type": "publicKey",
+              "path": "metadata_program"
+            }
+          }
+        },
+        {
+          "name": "tokenAccount",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
           "name": "drawManager",
           "isMut": true,
           "isSigner": true
@@ -1418,6 +1719,20 @@ export const IDL: Nexdraw = {
           "name": "drawRegent",
           "isMut": true,
           "isSigner": false,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "type": "string",
+                "value": "draw_regent"
+              },
+              {
+                "kind": "account",
+                "type": "publicKey",
+                "path": "draw_manager"
+              }
+            ]
+          },
           "relations": [
             "draw_manager"
           ]
@@ -1426,12 +1741,95 @@ export const IDL: Nexdraw = {
           "name": "draw",
           "isMut": true,
           "isSigner": false,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "type": "string",
+                "value": "draw"
+              },
+              {
+                "kind": "account",
+                "type": "publicKey",
+                "account": "Draw",
+                "path": "draw.draw_regent"
+              },
+              {
+                "kind": "account",
+                "type": "u32",
+                "account": "Draw",
+                "path": "draw.draw_id"
+              }
+            ]
+          },
           "relations": [
             "draw_regent"
           ]
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "tokenProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "associatedTokenProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "rent",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "metadataProgram",
+          "isMut": false,
+          "isSigner": false
         }
       ],
-      "args": []
+      "args": [
+        {
+          "name": "nftParams",
+          "type": {
+            "defined": "StartDrawParams"
+          }
+        }
+      ]
+    },
+    {
+      "name": "buyTicket",
+      "docs": [
+        "buys a ticket for the draw",
+        "Anyone can buy a ticket"
+      ],
+      "accounts": [
+        {
+          "name": "draw",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "rent",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": [
+        {
+          "name": "ticketId",
+          "type": "u32"
+        }
+      ]
     }
   ],
   "accounts": [
@@ -1552,6 +1950,26 @@ export const IDL: Nexdraw = {
     }
   ],
   "types": [
+    {
+      "name": "StartDrawParams",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "name",
+            "type": "string"
+          },
+          {
+            "name": "symbol",
+            "type": "string"
+          },
+          {
+            "name": "uri",
+            "type": "string"
+          }
+        ]
+      }
+    },
     {
       "name": "Capped",
       "type": {
@@ -1970,6 +2388,10 @@ export const IDL: Nexdraw = {
     {
       "code": 6007,
       "name": "NoNftDuplicates"
+    },
+    {
+      "code": 6008,
+      "name": "ExceedMaxTicketId"
     }
   ]
 };

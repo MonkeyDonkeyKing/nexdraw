@@ -32,6 +32,10 @@ export function deriveDraw(drawRegent: PublicKey, drawId: number): [PublicKey, n
   );
 }
 
+export function deriveDrawMint(drawRegent: PublicKey): [PublicKey, number] {
+  return PublicKey.findProgramAddressSync([Buffer.from('draw_mint'), drawRegent.toBytes()], PROGRAM_ID);
+}
+
 //// Metaplex Pdas
 export function deriveMetadata(mint: PublicKey) {
   return PublicKey.findProgramAddressSync(

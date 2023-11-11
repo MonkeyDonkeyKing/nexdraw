@@ -16,7 +16,7 @@ pub struct AddNftPrize<'info> {
     pub mint: Box<Account<'info, Mint>>,
     #[account(
         seeds = [
-            b"metadata".as_ref(),
+            "metadata".as_bytes(),
             Metadata::id().as_ref(),
             mint.key().as_ref()
         ],
@@ -26,10 +26,10 @@ pub struct AddNftPrize<'info> {
     pub metadata: Box<Account<'info, MetadataAccount>>,
     #[account(
         seeds = [
-            b"metadata".as_ref(),
+            "metadata".as_bytes(),
             Metadata::id().as_ref(),
             mint.key().as_ref(),
-            b"edition".as_ref(),
+            "edition".as_bytes(),
         ],
         seeds::program = Metadata::id(),
         bump,

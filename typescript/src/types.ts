@@ -22,6 +22,7 @@ export type EmperorAccount = IdlAccounts<Nexdraw>['emperor'];
 export type DrawRegentAccount = IdlAccounts<Nexdraw>['drawRegent'];
 
 export type IdlTimedParams = IdlTypes<Nexdraw>['TimedParams'];
+export type startDrawParams = IdlTypes<Nexdraw>['StartDrawParams'];
 
 // =================
 // ABSTRACTION TYPES

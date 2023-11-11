@@ -367,6 +367,83 @@ export type Nexdraw = {
         }
       ],
       "args": []
+    },
+    {
+      "name": "addPoolPrize",
+      "docs": [
+        "adds pool prize to the draw this is either a sol or an spl token prize depending on the ticket price type",
+        "Only the draw regent can add pool prizes"
+      ],
+      "accounts": [
+        {
+          "name": "drawManager",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "drawRegent",
+          "isMut": true,
+          "isSigner": false,
+          "relations": [
+            "draw_manager"
+          ]
+        },
+        {
+          "name": "draw",
+          "isMut": true,
+          "isSigner": false,
+          "relations": [
+            "draw_regent"
+          ]
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "rent",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": [
+        {
+          "name": "percentage",
+          "type": "u16"
+        }
+      ]
+    },
+    {
+      "name": "startDraw",
+      "docs": [
+        "starts the draw",
+        "Only the draw regent can start the draw"
+      ],
+      "accounts": [
+        {
+          "name": "drawManager",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "drawRegent",
+          "isMut": true,
+          "isSigner": false,
+          "relations": [
+            "draw_manager"
+          ]
+        },
+        {
+          "name": "draw",
+          "isMut": true,
+          "isSigner": false,
+          "relations": [
+            "draw_regent"
+          ]
+        }
+      ],
+      "args": []
     }
   ],
   "accounts": [
@@ -527,22 +604,6 @@ export type Nexdraw = {
             "name": "status",
             "type": {
               "defined": "DrawStatus"
-            }
-          },
-          {
-            "name": "drawingStatus",
-            "type": {
-              "option": {
-                "defined": "DrawingStatus"
-              }
-            }
-          },
-          {
-            "name": "cancelStatus",
-            "type": {
-              "option": {
-                "defined": "CancelStatus"
-              }
             }
           },
           {
@@ -783,7 +844,15 @@ export type Nexdraw = {
             "name": "Live"
           },
           {
-            "name": "Drawing"
+            "name": "Drawing",
+            "fields": [
+              {
+                "name": "drawingStatus",
+                "type": {
+                  "defined": "DrawingStatus"
+                }
+              }
+            ]
           },
           {
             "name": "Claim"
@@ -792,7 +861,15 @@ export type Nexdraw = {
             "name": "Finalized"
           },
           {
-            "name": "Canceled"
+            "name": "Canceled",
+            "fields": [
+              {
+                "name": "cancelStatus",
+                "type": {
+                  "defined": "CancelStatus"
+                }
+              }
+            ]
           }
         ]
       }
@@ -1278,6 +1355,83 @@ export const IDL: Nexdraw = {
         }
       ],
       "args": []
+    },
+    {
+      "name": "addPoolPrize",
+      "docs": [
+        "adds pool prize to the draw this is either a sol or an spl token prize depending on the ticket price type",
+        "Only the draw regent can add pool prizes"
+      ],
+      "accounts": [
+        {
+          "name": "drawManager",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "drawRegent",
+          "isMut": true,
+          "isSigner": false,
+          "relations": [
+            "draw_manager"
+          ]
+        },
+        {
+          "name": "draw",
+          "isMut": true,
+          "isSigner": false,
+          "relations": [
+            "draw_regent"
+          ]
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "rent",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": [
+        {
+          "name": "percentage",
+          "type": "u16"
+        }
+      ]
+    },
+    {
+      "name": "startDraw",
+      "docs": [
+        "starts the draw",
+        "Only the draw regent can start the draw"
+      ],
+      "accounts": [
+        {
+          "name": "drawManager",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "drawRegent",
+          "isMut": true,
+          "isSigner": false,
+          "relations": [
+            "draw_manager"
+          ]
+        },
+        {
+          "name": "draw",
+          "isMut": true,
+          "isSigner": false,
+          "relations": [
+            "draw_regent"
+          ]
+        }
+      ],
+      "args": []
     }
   ],
   "accounts": [
@@ -1438,22 +1592,6 @@ export const IDL: Nexdraw = {
             "name": "status",
             "type": {
               "defined": "DrawStatus"
-            }
-          },
-          {
-            "name": "drawingStatus",
-            "type": {
-              "option": {
-                "defined": "DrawingStatus"
-              }
-            }
-          },
-          {
-            "name": "cancelStatus",
-            "type": {
-              "option": {
-                "defined": "CancelStatus"
-              }
             }
           },
           {
@@ -1694,7 +1832,15 @@ export const IDL: Nexdraw = {
             "name": "Live"
           },
           {
-            "name": "Drawing"
+            "name": "Drawing",
+            "fields": [
+              {
+                "name": "drawingStatus",
+                "type": {
+                  "defined": "DrawingStatus"
+                }
+              }
+            ]
           },
           {
             "name": "Claim"
@@ -1703,7 +1849,15 @@ export const IDL: Nexdraw = {
             "name": "Finalized"
           },
           {
-            "name": "Canceled"
+            "name": "Canceled",
+            "fields": [
+              {
+                "name": "cancelStatus",
+                "type": {
+                  "defined": "CancelStatus"
+                }
+              }
+            ]
           }
         ]
       }

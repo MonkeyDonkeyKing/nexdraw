@@ -1,4 +1,3 @@
-
 use anchor_lang::prelude::*;
 
 use crate::NexdrawErrors;
@@ -45,7 +44,7 @@ impl Timed {
         Ok(new_timed)
     }
 
-    fn validate(&self) -> Result<()> {
+    pub fn validate(&self) -> Result<()> {
         let time = Clock::get()?.unix_timestamp;
 
         require!(self.end_time > time, NexdrawErrors::ElapsedEndTime);

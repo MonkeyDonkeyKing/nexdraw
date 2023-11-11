@@ -10,10 +10,10 @@ pub struct DrawInfo {
 }
 
 impl DrawInfo {
-    pub fn size(max_prizes_size: usize) -> usize {
+    pub fn size(prizes: usize) -> usize {
         DrawType::size() + // draw_type
         DrawStatus::size() + // status
-        Prizes::size(max_prizes_size) // prizes
+        Prizes::size(prizes) // prizes
     }
 
     pub fn new(draw_type: DrawType) -> Self {

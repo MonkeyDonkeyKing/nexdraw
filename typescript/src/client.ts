@@ -5,10 +5,12 @@ import { PROGRAM_ID, deriveDrawRegent } from './addresses';
 import { Connection, PublicKey, Transaction } from '@solana/web3.js';
 import { buildAnonymousProvider } from './utils';
 import {
-  createAddPrizeTransaction,
+  createAddNftPrizeTransaction,
+  createAddPoolPrizeTransaction,
   createCreateDrawRegentTransaction,
   createCreateTimedSolDrawTransaction,
   createInitializeEmperorTransaction,
+  createStartDrawTransaction,
   createUpdateDrawRegentTransaction,
   createUpdateEmperorAuthorityTransaction
 } from './instructions';
@@ -183,8 +185,33 @@ export class NexDraw {
    * @memberof NexDraw
    *
    */
-  async addNftToDraw(draw: PublicKey, nft: PublicKey): Promise<string> {
-    const tx = await createAddPrizeTransaction(this.#program, draw, nft);
+  async addNftPrizeToDraw(draw: PublicKey, nft: PublicKey): Promise<string> {
+    const tx = await createAddNftPrizeTransaction(this.#program, draw, nft);
+    return this._withParsedTransactionError(tx);
+  }
+
+  /**
+   * Adds an pool prize to a draw
+   * @param {PublicKey} draw
+   * @param {PublicKey} percentage
+   * @returns {Promise<string>}
+   * @memberof NexDraw
+   *
+   */
+  async addPoolPrizeToDraw(draw: PublicKey, percentage: number): Promise<string> {
+    const tx = await createAddPoolPrizeTransaction(this.#program, draw, percentage);
+    return this._withParsedTransactionError(tx);
+  }
+
+  /**
+   * Starts a draw
+   * @param {PublicKey} draw
+   * @returns {Promise<string>}
+   * @memberof NexDraw
+   *
+   */
+  async startDraw(draw: PublicKey): Promise<string> {
+    const tx = await createStartDrawTransaction(this.#program, draw);
     return this._withParsedTransactionError(tx);
   }
 

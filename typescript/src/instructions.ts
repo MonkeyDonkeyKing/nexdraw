@@ -12,6 +12,7 @@ import {
 } from './addresses';
 import { IdlTimedParams, MethodParams } from './types';
 import { getAssociatedTokenAddressSync } from '@solana/spl-token';
+import { z } from 'zod';
 
 /**
  * Create a full transaction for `initialize_emperor`.
@@ -161,12 +162,11 @@ export async function createCreateTimedSolDrawTransaction(
 }
 
 /**
- *  Create the ix instance for the `create_timed_sol_draw` instruction.
+ * Create the ix instance for the `create_timed_sol_draw` instruction.
  * @export
  * @param {Program<Nexdraw>} program
- * @param {IdlTimedParams} timedParams
  * @param {BN} ticketPrice
- * @param {number} drawId
+ * @param {IdlTimedParams} timedParams
  * @returns {Promise<TransactionInstruction>}
  *
  */
@@ -191,29 +191,29 @@ export async function createCreateTimedSolDrawInstruction(
 }
 
 /**
- * Create a full transaction for the `add_prize` instruction.
+ * Create a full transaction for the `add_nft_prize` instruction.
  * @export
  * @param {...Parameters<typeof createAddPrizeInstruction>} args
  * @returns {Promise<Transaction>}
  *
  */
-export async function createAddPrizeTransaction(
-  ...args: Parameters<typeof createAddPrizeInstruction>
+export async function createAddNftPrizeTransaction(
+  ...args: Parameters<typeof createAddNftPrizeInstruction>
 ): Promise<Transaction> {
-  const ix = await createAddPrizeInstruction(...args);
+  const ix = await createAddNftPrizeInstruction(...args);
   return new Transaction().add(ix);
 }
 
 /**
- * Create the ix instance for the `add_prize` instruction.
+ * Create the ix instance for the `add_nft_prize` instruction.
  * @export
  * @param {Program<Nexdraw>} program
  * @param {PublicKey} draw
- * @param {IdlPrizeParams} prizeParams
+ * @param {PublicKey} mint
  * @returns {Promise<TransactionInstruction>}
  *
  */
-export async function createAddPrizeInstruction(
+export async function createAddNftPrizeInstruction(
   program: Program<Nexdraw>,
   draw: PublicKey,
   mint: PublicKey
@@ -238,6 +238,89 @@ export async function createAddPrizeInstruction(
       senderAta,
       drawManager,
       drawRegent,
+      draw
+    })
+    .instruction();
+}
+
+/**
+ * Create a full transaction for the `add_pool_prize` instruction.
+ * @export
+ * @param {...Parameters<typeof createAddPrizeInstruction>} args
+ * @returns {Promise<Transaction>}
+ *
+ */
+export async function createAddPoolPrizeTransaction(
+  ...args: Parameters<typeof createAddPoolPrizeInstruction>
+): Promise<Transaction> {
+  const ix = await createAddPoolPrizeInstruction(...args);
+  return new Transaction().add(ix);
+}
+
+/**
+ * Create the ix instance for the `add_pool_prize` instruction.
+ * @export
+ * @param {Program<Nexdraw>} program
+ * @param {PublicKey} draw
+ * @param {number} percentage
+ * @returns {Promise<TransactionInstruction>}
+ *
+ */
+export async function createAddPoolPrizeInstruction(
+  program: Program<Nexdraw>,
+  draw: PublicKey,
+  percentage: number
+): Promise<TransactionInstruction> {
+  if (!program.provider.publicKey) {
+    throw new Error('no public key found on the program provider');
+  }
+  const validatedPercentage = z.number().min(0).max(1000).parse(percentage);
+  const drawRegent = deriveDrawRegent(program.provider.publicKey)[0];
+  const drawManager = program.provider.publicKey;
+
+  return program.methods
+    .addPoolPrize(validatedPercentage)
+    .accounts({
+      drawManager,
+      drawRegent,
+      draw
+    })
+    .instruction();
+}
+
+/**
+ * Create a full transaction for the `start_draw` instruction.
+ * @export
+ * @param {...Parameters<typeof createStartDrawInstruction>} args
+ * @returns {Promise<Transaction>}
+ *
+ */
+export async function createStartDrawTransaction(
+  ...args: Parameters<typeof createStartDrawInstruction>
+): Promise<Transaction> {
+  const ix = await createStartDrawInstruction(...args);
+  return new Transaction().add(ix);
+}
+
+/**
+ * Create the ix instance for the `start_draw` instruction.
+ * @export
+ * @param {Program<Nexdraw>} program
+ * @param {PublicKey} draw
+ * @returns {Promise<TransactionInstruction>}
+ *
+ */
+export async function createStartDrawInstruction(
+  program: Program<Nexdraw>,
+  draw: PublicKey
+): Promise<TransactionInstruction> {
+  if (!program.provider.publicKey) {
+    throw new Error('no public key found on the program provider');
+  }
+
+  return program.methods
+    .startDraw()
+    .accounts({
       draw
     })
     .instruction();

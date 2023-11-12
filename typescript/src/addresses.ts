@@ -1,4 +1,5 @@
 import { BN } from '@coral-xyz/anchor';
+import { keypairIdentity } from '@metaplex-foundation/js';
 import { PublicKey } from '@solana/web3.js';
 
 export const PROGRAM_ID = new PublicKey('DRAWDnBHxRrointnFhaLEsexAXjgW2rUqZU7qpGqxonP');
@@ -34,6 +35,13 @@ export function deriveDraw(drawRegent: PublicKey, drawId: number): [PublicKey, n
 
 export function deriveDrawMint(drawRegent: PublicKey): [PublicKey, number] {
   return PublicKey.findProgramAddressSync([Buffer.from('draw_mint'), drawRegent.toBytes()], PROGRAM_ID);
+}
+
+export function deriveTicketMint(draw: PublicKey, ticketId: number): [PublicKey, number] {
+  return PublicKey.findProgramAddressSync(
+    [Buffer.from('ticket'), draw.toBytes(), new BN(ticketId).toArrayLike(Buffer, 'le', 4)],
+    PROGRAM_ID
+  );
 }
 
 //// Metaplex Pdas

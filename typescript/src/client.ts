@@ -1,12 +1,13 @@
 import { parseIdlErrors, Program, translateError, type ProgramAccount, type Provider, BN } from '@coral-xyz/anchor';
 import { IDL, type Nexdraw } from './nexdraw';
 import { Metaplex, type JsonMetadata, type Metadata } from '@metaplex-foundation/js';
-import { PROGRAM_ID, deriveDrawRegent } from './addresses';
+import { PROGRAM_ID, deriveDrawRegent, deriveTicketMint } from './addresses';
 import { Connection, PublicKey, Transaction } from '@solana/web3.js';
 import { buildAnonymousProvider } from './utils';
 import {
   createAddNftPrizeTransaction,
   createAddPoolPrizeTransaction,
+  createBuyTicketTransaction,
   createCreateDrawRegentTransaction,
   createCreateTimedSolDrawTransaction,
   createInitializeEmperorTransaction,
@@ -217,18 +218,29 @@ export class NexDraw {
   }
 
   /**
-   * Adds an pool prize to a draw
+   * Buys a ticket
    * @param {PublicKey} draw
-   * @param {number} prize
    * @returns {Promise<string>}
    * @memberof NexDraw
    *
    */
-  async addPoollPrizeToDraw(draw: PublicKey, prize: number): Promise<string> {
-    const tx = await createAddPoolPrizeTransaction(this.#program, draw, prize);
+  async buyTicket(draw: PublicKey): Promise<string> {
+    const sold: number = (await this.#program.account.draw.fetch(draw)).ticketInfo.sold;
+    let max = sold * 2 > 100 ? sold * 2 : 100;
+    let ticketId = 0;
+    while (true) {
+      // generate a random number between 0 and max
+      const randomNumber = Math.floor(Math.random() * max);
+      const ticket = deriveTicketMint(draw, ticketId)[0];
+      const accountData = await this.#program.provider.connection.getParsedAccountInfo(ticket);
+      if (!accountData) {
+        ticketId = randomNumber;
+        break;
+      }
+    }
+    const tx = await createBuyTicketTransaction(this.#program, draw, ticketId);
     return this._withParsedTransactionError(tx);
   }
-
   private async _withParsedTransactionError(tx: Transaction): Promise<string> {
     try {
       return await this.#provider.sendAndConfirm!(tx);

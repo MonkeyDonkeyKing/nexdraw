@@ -9,7 +9,8 @@ import {
   deriveDrawMint,
   deriveDrawRegent,
   deriveMasterEdition,
-  deriveMetadata
+  deriveMetadata,
+  deriveTicketMint
 } from './addresses';
 import { IdlTimedParams, MethodParams, startDrawParams } from './types';
 import { getAssociatedTokenAddressSync } from '@solana/spl-token';
@@ -244,7 +245,6 @@ export async function createAddNftPrizeInstruction(
     .instruction();
 }
 
-
 /**
  * Create a full transaction for the `add_pool_prize` instruction.
  * @export
@@ -333,6 +333,62 @@ export async function createStartDrawInstruction(
       metadata,
       masterEdition,
       tokenAccount,
+      metadataProgram: TOKEN_METADATA_PROGRAM_ID
+    })
+    .instruction();
+}
+
+/**
+ * Create a full transaction for the `buy_ticket` instruction.
+ * @export
+ * @param {...Parameters<typeof createBuyTicketInstruction>} args
+ * @returns {Promise<Transaction>}
+ *
+ */
+export async function createBuyTicketTransaction(
+  ...args: Parameters<typeof createBuyTicketInstruction>
+): Promise<Transaction> {
+  const ix = await createBuyTicketInstruction(...args);
+  return new Transaction().add(ix);
+}
+
+/**
+ * Create the ix instance for the `buy_ticket` instruction.
+ * @export
+ * @param {Program<Nexdraw>} program
+ * @param {PublicKey} draw
+ * @param {BN} ticketId
+ * @returns {Promise<TransactionInstruction>}
+ *
+ */
+export async function createBuyTicketInstruction(
+  program: Program<Nexdraw>,
+  draw: PublicKey,
+  ticketId: number
+): Promise<TransactionInstruction> {
+  if (!program.provider.publicKey) {
+    throw new Error('no public key found on the program provider');
+  }
+  const [drawMint] = deriveDrawMint(draw);
+  const [drawMetadata] = deriveMetadata(drawMint);
+  const [drawMasterEdition] = deriveMasterEdition(drawMint);
+
+  const [ticketMint] = deriveTicketMint(draw, ticketId);
+  const [ticketMetadata] = deriveMetadata(ticketMint);
+  const [ticketMasterEdition] = deriveMasterEdition(ticketMint);
+  const buyerTokenAccount = getAssociatedTokenAddressSync(ticketMint, program.provider.publicKey);
+
+  return program.methods
+    .buyTicket(ticketId)
+    .accounts({
+      draw,
+      drawMint,
+      drawMetadata,
+      drawMasterEdition,
+      ticketMasterEdition,
+      ticketMetadata,
+      ticketMint,
+      buyerTokenAccount,
       metadataProgram: TOKEN_METADATA_PROGRAM_ID
     })
     .instruction();

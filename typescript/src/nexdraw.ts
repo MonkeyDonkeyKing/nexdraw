@@ -444,67 +444,12 @@ export type Nexdraw = {
         {
           "name": "metadata",
           "isMut": true,
-          "isSigner": false,
-          "pda": {
-            "seeds": [
-              {
-                "kind": "const",
-                "type": "string",
-                "value": "metadata"
-              },
-              {
-                "kind": "account",
-                "type": "publicKey",
-                "path": "metadata_program"
-              },
-              {
-                "kind": "account",
-                "type": "publicKey",
-                "account": "Mint",
-                "path": "mint"
-              }
-            ],
-            "programId": {
-              "kind": "account",
-              "type": "publicKey",
-              "path": "metadata_program"
-            }
-          }
+          "isSigner": false
         },
         {
           "name": "masterEdition",
           "isMut": true,
-          "isSigner": false,
-          "pda": {
-            "seeds": [
-              {
-                "kind": "const",
-                "type": "string",
-                "value": "metadata"
-              },
-              {
-                "kind": "account",
-                "type": "publicKey",
-                "path": "metadata_program"
-              },
-              {
-                "kind": "account",
-                "type": "publicKey",
-                "account": "Mint",
-                "path": "mint"
-              },
-              {
-                "kind": "const",
-                "type": "string",
-                "value": "edition"
-              }
-            ],
-            "programId": {
-              "kind": "account",
-              "type": "publicKey",
-              "path": "metadata_program"
-            }
-          }
+          "isSigner": false
         },
         {
           "name": "tokenAccount",
@@ -610,12 +555,128 @@ export type Nexdraw = {
       ],
       "accounts": [
         {
-          "name": "draw",
+          "name": "drawMasterEdition",
           "isMut": true,
           "isSigner": false
         },
         {
+          "name": "drawMetadata",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "drawMint",
+          "isMut": false,
+          "isSigner": false,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "type": "string",
+                "value": "draw_mint"
+              },
+              {
+                "kind": "account",
+                "type": "publicKey",
+                "account": "Draw",
+                "path": "draw"
+              }
+            ]
+          }
+        },
+        {
+          "name": "ticketMint",
+          "isMut": true,
+          "isSigner": false,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "type": "string",
+                "value": "ticket"
+              },
+              {
+                "kind": "account",
+                "type": "publicKey",
+                "account": "Draw",
+                "path": "draw"
+              },
+              {
+                "kind": "arg",
+                "type": "u32",
+                "path": "ticket_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "ticketMetadata",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "ticketMasterEdition",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "draw",
+          "isMut": true,
+          "isSigner": false,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "type": "string",
+                "value": "draw"
+              },
+              {
+                "kind": "account",
+                "type": "publicKey",
+                "account": "Draw",
+                "path": "draw.draw_regent"
+              },
+              {
+                "kind": "account",
+                "type": "u32",
+                "account": "Draw",
+                "path": "draw.draw_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "buyer",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "buyerTokenAccount",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "metadataProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
           "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "associatedTokenProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "tokenMetadataProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "tokenProgram",
           "isMut": false,
           "isSigner": false
         },
@@ -1643,67 +1704,12 @@ export const IDL: Nexdraw = {
         {
           "name": "metadata",
           "isMut": true,
-          "isSigner": false,
-          "pda": {
-            "seeds": [
-              {
-                "kind": "const",
-                "type": "string",
-                "value": "metadata"
-              },
-              {
-                "kind": "account",
-                "type": "publicKey",
-                "path": "metadata_program"
-              },
-              {
-                "kind": "account",
-                "type": "publicKey",
-                "account": "Mint",
-                "path": "mint"
-              }
-            ],
-            "programId": {
-              "kind": "account",
-              "type": "publicKey",
-              "path": "metadata_program"
-            }
-          }
+          "isSigner": false
         },
         {
           "name": "masterEdition",
           "isMut": true,
-          "isSigner": false,
-          "pda": {
-            "seeds": [
-              {
-                "kind": "const",
-                "type": "string",
-                "value": "metadata"
-              },
-              {
-                "kind": "account",
-                "type": "publicKey",
-                "path": "metadata_program"
-              },
-              {
-                "kind": "account",
-                "type": "publicKey",
-                "account": "Mint",
-                "path": "mint"
-              },
-              {
-                "kind": "const",
-                "type": "string",
-                "value": "edition"
-              }
-            ],
-            "programId": {
-              "kind": "account",
-              "type": "publicKey",
-              "path": "metadata_program"
-            }
-          }
+          "isSigner": false
         },
         {
           "name": "tokenAccount",
@@ -1809,12 +1815,128 @@ export const IDL: Nexdraw = {
       ],
       "accounts": [
         {
-          "name": "draw",
+          "name": "drawMasterEdition",
           "isMut": true,
           "isSigner": false
         },
         {
+          "name": "drawMetadata",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "drawMint",
+          "isMut": false,
+          "isSigner": false,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "type": "string",
+                "value": "draw_mint"
+              },
+              {
+                "kind": "account",
+                "type": "publicKey",
+                "account": "Draw",
+                "path": "draw"
+              }
+            ]
+          }
+        },
+        {
+          "name": "ticketMint",
+          "isMut": true,
+          "isSigner": false,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "type": "string",
+                "value": "ticket"
+              },
+              {
+                "kind": "account",
+                "type": "publicKey",
+                "account": "Draw",
+                "path": "draw"
+              },
+              {
+                "kind": "arg",
+                "type": "u32",
+                "path": "ticket_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "ticketMetadata",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "ticketMasterEdition",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "draw",
+          "isMut": true,
+          "isSigner": false,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "type": "string",
+                "value": "draw"
+              },
+              {
+                "kind": "account",
+                "type": "publicKey",
+                "account": "Draw",
+                "path": "draw.draw_regent"
+              },
+              {
+                "kind": "account",
+                "type": "u32",
+                "account": "Draw",
+                "path": "draw.draw_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "buyer",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "buyerTokenAccount",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "metadataProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
           "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "associatedTokenProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "tokenMetadataProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "tokenProgram",
           "isMut": false,
           "isSigner": false
         },

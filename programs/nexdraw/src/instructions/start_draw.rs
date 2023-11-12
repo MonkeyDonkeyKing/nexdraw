@@ -35,11 +35,11 @@ pub struct StartDraw<'info> {
     #[account(mut,         
         seeds = [
             "metadata".as_bytes(),
-            metadata_program.key().as_ref(),
+            Metadata::id().as_ref(),
             mint.key().as_ref(),
         ],
         bump,
-        seeds::program = metadata_program.key(),
+        seeds::program = Metadata::id(),
     )]
     /// CHECK: We're about to create this with Metaplex
     pub metadata: UncheckedAccount<'info>,
@@ -47,12 +47,12 @@ pub struct StartDraw<'info> {
         mut,
         seeds = [
             "metadata".as_bytes(),
-            metadata_program.key().as_ref(),
+            Metadata::id().as_ref(),
             mint.key().as_ref(),
             "edition".as_bytes(),
         ],
         bump,
-        seeds::program = metadata_program.key(),
+        seeds::program = Metadata::id(),
     )]
     /// CHECK: We're about to create this with Metaplex
     pub master_edition: UncheckedAccount<'info>,

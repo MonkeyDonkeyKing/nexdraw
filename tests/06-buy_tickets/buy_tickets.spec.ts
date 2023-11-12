@@ -66,9 +66,6 @@ describe('Buy ticket functionality', () => {
     const [mint] = deriveDrawMint(drawPubkey[0]);
     const [metadata] = deriveMetadata(mint);
     const [masterEdition] = deriveMasterEdition(mint);
-    const masterEditionData = await regent.program.provider.connection.getParsedAccountInfo(masterEdition);
-    console.log(JSON.stringify(masterEditionData, null, 2));
-    assert.ok;
   });
 
   it('buy ticket', async () => {

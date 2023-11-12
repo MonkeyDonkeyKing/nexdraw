@@ -124,4 +124,6 @@ pub enum NexdrawErrors {
     MinMaxTicketsCrossOver,
     NoNftDuplicates,
     ExceedMaxTicketId,
+    DrawEnded,
+    MaxCapReached,
 }

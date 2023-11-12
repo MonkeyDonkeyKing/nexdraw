@@ -1,7 +1,7 @@
 use super::tickets::TicketInfo;
 use super::types::DrawType;
 use super::winners::Winners;
-use super::{DrawInfo, Timed};
+use super::{draw_info, DrawInfo, Timed};
 use anchor_lang::prelude::*;
 
 #[account]
@@ -14,7 +14,6 @@ pub struct Draw {
     /// Info about the draw.
     pub draw_info: DrawInfo,
     /// The info about the tickets,
-    pub ticket_info: TicketInfo,
     pub winners: Winners,
     /// Unused reservfe byte space for future changes
     _reserved: [u8; 64],
@@ -26,7 +25,6 @@ impl Draw {
         32 + // manager
         4 + // draw_id
         DrawInfo::size(max_prizes_size) + // draw_info
-        TicketInfo::size() + // ticket_info
         Winners::size(max_prizes_size) + // winners
         64 // reserved
     }
@@ -39,8 +37,7 @@ impl Draw {
         Ok(Self {
             draw_regent,
             draw_id,
-            draw_info: DrawInfo::new(DrawType::Timed(timed)),
-            ticket_info,
+            draw_info: DrawInfo::new(DrawType::Timed(timed), ticket_info),
             winners: Winners::new(),
             _reserved: [0; 64],
         })

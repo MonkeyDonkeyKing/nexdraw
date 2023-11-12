@@ -2,8 +2,8 @@ use anchor_lang::prelude::*;
 use anchor_spl::{
     associated_token::AssociatedToken,
     metadata::{
-        CreateMasterEditionV3, CreateMetadataAccountsV3, MasterEditionAccount, Metadata,
-        MetadataAccount, VerifyCollection, self,
+        self, CreateMasterEditionV3, CreateMetadataAccountsV3, MasterEditionAccount, Metadata,
+        MetadataAccount, VerifyCollection,
     },
     token::{self, FreezeAccount, Mint, MintTo, Token, TokenAccount},
 };
@@ -98,7 +98,7 @@ pub struct BuyTicket<'info> {
     pub ticket_master_edition: UncheckedAccount<'info>,
     #[account(
         mut,
-        constraint = draw.draw_info.status == DrawStatus::Live, 
+        constraint = draw.draw_info.status == DrawStatus::Live,
         seeds = [
             "draw".as_bytes(),
             draw.draw_regent.key().as_ref(),
@@ -196,17 +196,38 @@ impl<'info> BuyTicket<'info> {
 }
 
 pub fn buy_ticket_handler(ctx: Context<BuyTicket>, ticket_id: u32) -> Result<()> {
-    let tickets_sold: u32 = ctx.accounts.draw.ticket_info.sold;
-    let max_ticket_id = if tickets_sold * 2 < 100 {
-        100
-    } else {
-        tickets_sold * 2
-    };
-    require_gte!(max_ticket_id, ticket_id, NexdrawErrors::ExceedMaxTicketId);
-    ctx.accounts.draw.ticket_info.sold += 1;
+    {
+        // this block checks if the selected ticket is not out of bounds for the current amount of tickets sold
+        let tickets_sold = &ctx.accounts.draw.draw_info.ticket_info.sold;
+        let max_ticket_id = if tickets_sold * 2 < 100 {
+            100
+        } else {
+            tickets_sold * 2
+        };
+        require_gte!(max_ticket_id, ticket_id, NexdrawErrors::ExceedMaxTicketId);
+    }
+
+    {
+        // this block checks if the draw is still within the time limit
+        let time = Clock::get()?.unix_timestamp;
+        let draw_end_time = ctx.accounts.draw.draw_info.get_end_time()?;
+        require!(time < draw_end_time, NexdrawErrors::DrawEnded);
+    }
+
+    {
+        // this block checks if the ticket we are buying does not exceed the max amount of tickets for sale
+        if let Some(ticket_cap) = ctx.accounts.draw.draw_info.get_max_tickets_for_sale() {
+            require_gt!(
+                ticket_cap,
+                ctx.accounts.draw.draw_info.ticket_info.sold,
+                NexdrawErrors::MaxCapReached
+            )
+        }
+    }
+
+    ctx.accounts.draw.draw_info.ticket_info.sold += 1;
 
     let draw = &ctx.accounts.draw;
-
     token::mint_to(
         ctx.accounts.mint_to_ctx().with_signer(&[&[
             "draw".as_bytes(),
@@ -264,12 +285,15 @@ pub fn buy_ticket_handler(ctx: Context<BuyTicket>, ticket_id: u32) -> Result<()>
         ]]),
         Some(1),
     )?;
-    metadata::verify_collection(ctx.accounts.verify_collection().with_signer(&[&[
-        "draw".as_bytes(),
-        draw.draw_regent.key().as_ref(),
-        draw.draw_id.to_le_bytes().as_ref(),
-        &[ctx.bumps.draw],
-    ]]), None)?;
+    metadata::verify_collection(
+        ctx.accounts.verify_collection().with_signer(&[&[
+            "draw".as_bytes(),
+            draw.draw_regent.key().as_ref(),
+            draw.draw_id.to_le_bytes().as_ref(),
+            &[ctx.bumps.draw],
+        ]]),
+        None,
+    )?;
 
     Ok(())
 }

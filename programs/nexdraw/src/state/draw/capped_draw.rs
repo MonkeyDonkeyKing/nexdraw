@@ -4,8 +4,8 @@ use crate::NexdrawErrors;
 
 #[derive(AnchorSerialize, AnchorDeserialize, Clone, PartialEq, Eq, Debug)]
 pub struct Capped {
-    maximum_duration: i64,
-    ticket_cap: u32,
+    pub maximum_duration: i64,
+    pub ticket_cap: u32,
     reserved: [u8; 124],
 }
 

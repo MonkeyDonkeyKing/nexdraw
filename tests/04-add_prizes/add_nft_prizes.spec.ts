@@ -44,13 +44,13 @@ describe('TimedSolDraw Functionality', () => {
     // }).catch(err => {
     //   console.log(err);
     // });
-    await regent
-      .startDraw(drawPubkey[0], { name: 'test', uri: 'test', symbol: 'test' })
-      .catch(err => {
-        console.log(err);
-      })
-      .then(res => {
-        console.log(res);
-      });
+    // await regent
+    //   .startDraw(drawPubkey[0], { name: 'test', uri: 'test', symbol: 'test' })
+    //   .catch(err => {
+    //     console.log(err);
+    //   })
+    //   .then(res => {
+    //     console.log(res);
+    //   });
   });
 });

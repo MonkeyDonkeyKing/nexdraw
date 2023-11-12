@@ -2,7 +2,7 @@ import { parseIdlErrors, Program, translateError, type ProgramAccount, type Prov
 import { IDL, type Nexdraw } from './nexdraw';
 import { Metaplex, type JsonMetadata, type Metadata } from '@metaplex-foundation/js';
 import { PROGRAM_ID, deriveDrawRegent, deriveTicketMint } from './addresses';
-import { Connection, PublicKey, Transaction } from '@solana/web3.js';
+import { Connection, PublicKey, Transaction, ComputeBudgetProgram } from '@solana/web3.js';
 import { buildAnonymousProvider } from './utils';
 import {
   createAddNftPrizeTransaction,
@@ -233,12 +233,15 @@ export class NexDraw {
       const randomNumber = Math.floor(Math.random() * max);
       const ticket = deriveTicketMint(draw, ticketId)[0];
       const accountData = await this.#program.provider.connection.getParsedAccountInfo(ticket);
-      if (!accountData) {
+      if (accountData.value === null) {
         ticketId = randomNumber;
         break;
       }
     }
-    const tx = await createBuyTicketTransaction(this.#program, draw, ticketId);
+    const modifyComputeUnits = ComputeBudgetProgram.setComputeUnitLimit({
+      units: 1000000
+    });
+    const tx = (await createBuyTicketTransaction(this.#program, draw, ticketId)).add(modifyComputeUnits);
     return this._withParsedTransactionError(tx);
   }
   private async _withParsedTransactionError(tx: Transaction): Promise<string> {

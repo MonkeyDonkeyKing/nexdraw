@@ -50,8 +50,8 @@ pub struct BuyTicket<'info> {
         ],
         bump,
         mint::decimals = 0,
-        mint::authority = draw,
-        mint::freeze_authority = draw
+        mint::authority = draw_master_edition,
+        mint::freeze_authority = draw_master_edition
     )]
     pub draw_mint: Account<'info, Mint>,
     /*
@@ -124,7 +124,6 @@ pub struct BuyTicket<'info> {
     pub metadata_program: Program<'info, Metadata>,
     pub system_program: Program<'info, System>,
     pub associated_token_program: Program<'info, AssociatedToken>,
-    pub token_metadata_program: Program<'info, Metadata>,
     pub token_program: Program<'info, Token>,
     pub rent: Sysvar<'info, Rent>,
 }
@@ -226,7 +225,9 @@ pub fn buy_ticket_handler(ctx: Context<BuyTicket>, ticket_id: u32) -> Result<()>
     ]]))?;
 
     let metadata = &ctx.accounts.draw_metadata;
-    let name = format!("{} #{}", metadata.name, ticket_id);
+    // let name = format!("{} #{}", metadata.name, ticket_id);
+    let name = format!("aaa #{}", ticket_id);
+
     let symbol = &metadata.symbol;
     let uri = &metadata.uri;
 
@@ -249,8 +250,8 @@ pub fn buy_ticket_handler(ctx: Context<BuyTicket>, ticket_id: u32) -> Result<()>
             creators: None,
             seller_fee_basis_points: 0,
         },
-        false,
-        false,
+        true,
+        true,
         None,
     )?;
 

@@ -32,7 +32,8 @@ pub struct StartDraw<'info> {
         mint::freeze_authority = draw
     )]
     pub mint: Account<'info, Mint>,
-    #[account(mut,         
+    #[account(
+        mut,         
         seeds = [
             "metadata".as_bytes(),
             Metadata::id().as_ref(),
@@ -116,7 +117,7 @@ impl<'info> StartDraw<'info> {
             mint: self.mint.to_account_info(),
             mint_authority: self.draw.to_account_info(),
             payer: self.draw_manager.to_account_info(),
-            update_authority: self.draw_manager.to_account_info(),
+            update_authority: self.draw.to_account_info(),
             system_program: self.system_program.to_account_info(),
             rent: self.rent.to_account_info(),
         };
@@ -127,7 +128,7 @@ impl<'info> StartDraw<'info> {
         let cpi_accounts = CreateMasterEditionV3 {
             edition: self.master_edition.to_account_info(),
             mint: self.mint.to_account_info(),
-            update_authority: self.draw_manager.to_account_info(),
+            update_authority: self.draw.to_account_info(),
             mint_authority: self.draw.to_account_info(),
             payer: self.draw_manager.to_account_info(),
             metadata: self.metadata.to_account_info(),
@@ -194,7 +195,7 @@ pub fn start_draw_handler(ctx: Context<StartDraw>, params: StartDrawParams) -> R
 
     metadata::create_master_edition_v3(
         ctx.accounts.create_master_edition_v3().with_signer(&[&["draw".as_bytes(), draw.draw_regent.key().as_ref(), draw.draw_id.to_le_bytes().as_ref(), &[ctx.bumps.draw]]]),
-        Some(1),
+        Some(0),
     )?;
 
     Ok(())

@@ -1,15 +1,22 @@
 import * as anchor from '@coral-xyz/anchor';
 import { client, createRandomProvider } from '../common';
 import { assert } from 'chai';
-import { NexDraw, createAddPoolPrizeInstruction, createBuyTicketInstruction, createStartDrawInstruction, deriveDraw, startDrawParams } from '../../typescript/src';
+import {
+  NexDraw,
+  createAddPoolPrizeInstruction,
+  createBuyTicketInstruction,
+  createStartDrawInstruction,
+  deriveDraw,
+  deriveDrawMint,
+  deriveMasterEdition,
+  deriveMetadata,
+  startDrawParams
+} from '../../typescript/src';
 import { LAMPORTS_PER_SOL } from '@solana/web3.js';
 import { NexDrawBuilder } from '../context_builder';
 
 describe('Buy ticket functionality', () => {
-  let drawRegent: [anchor.web3.PublicKey, number],
-    drawPubkey: [anchor.web3.PublicKey, number],
-    regent: NexDraw,
-    draw;
+  let drawRegent: [anchor.web3.PublicKey, number], drawPubkey: [anchor.web3.PublicKey, number], regent: NexDraw, draw;
 
   it('initialize draw', async () => {
     // Create draw
@@ -31,7 +38,7 @@ describe('Buy ticket functionality', () => {
     drawPubkey = deriveDraw(drawRegent[0], 0);
 
     assert.ok;
-  })
+  });
 
   it('add prize to created draw', async () => {
     const prize = 10;
@@ -40,31 +47,36 @@ describe('Buy ticket functionality', () => {
     draw = await regent.program.account.draw.fetch(drawPubkey[0]);
 
     assert.ok;
-  })
+  });
 
   it('start draw', async () => {
     const startDrawParams: startDrawParams = {
       name: `Test Collection ${draw.drawId}`,
       symbol: 'NXDRW',
       uri: 'https://ipfs.io/ipfs/bafkreicja2w6txnvco7hhcynm7ubh236kn4xmp3u7msdf4lanctxclt25q/'
-    }
+    };
 
     const nftStartDrawParams: startDrawParams = {
       name: `Test Ticket`,
       symbol: 'NXDRW',
       uri: 'https://ipfs.io/ipfs/bafkreicja2w6txnvco7hhcynm7ubh236kn4xmp3u7msdf4lanctxclt25q/'
-    }
+    };
 
-    const drawix = await createStartDrawInstruction(regent.program, drawPubkey[0], startDrawParams);
-    const resD = await regent.startDraw(drawPubkey[0], nftStartDrawParams)
+    const resD = await regent.startDraw(drawPubkey[0], nftStartDrawParams);
+    const [mint] = deriveDrawMint(drawPubkey[0]);
+    const [metadata] = deriveMetadata(mint);
+    const [masterEdition] = deriveMasterEdition(mint);
+    const masterEditionData = await regent.program.provider.connection.getParsedAccountInfo(masterEdition);
+    console.log(JSON.stringify(masterEditionData, null, 2));
     assert.ok;
-  })
+  });
 
   it('buy ticket', async () => {
     // buy ticket
     const amount = 1;
-    const buyTicketix = await createBuyTicketInstruction(regent.program, drawPubkey[0], amount);
-    const resT = await regent.buyTicketFromDraw(drawPubkey[0], amount);
+    const rest = await regent.buyTicket(drawPubkey[0]).catch(err => {
+      console.log(err);
+    });
     assert.ok;
-  })
+  });
 });

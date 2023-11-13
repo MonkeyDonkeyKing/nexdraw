@@ -106,6 +106,10 @@ pub mod nexdraw {
     pub fn buy_ticket(ctx: Context<BuyTicket>, ticket_id: u32) -> Result<()> {
         buy_ticket_handler(ctx, ticket_id)
     }
+
+    pub fn draw_winners(ctx: Context<DrawWinners>) -> Result<()> {
+        draw_winners_handler(ctx)
+    }
 }
 
 declare_id!("DRAWDnBHxRrointnFhaLEsexAXjgW2rUqZU7qpGqxonP");
@@ -126,4 +130,6 @@ pub enum NexdrawErrors {
     ExceedMaxTicketId,
     DrawEnded,
     MaxCapReached,
+    NotEnoughTicketsSold,
+    DrawTimeNotOver,
 }

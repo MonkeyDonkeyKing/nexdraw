@@ -2284,6 +2284,7 @@ version = "0.0.1"
 dependencies = [
  "anchor-lang",
  "anchor-spl",
+ "arrayref",
  "async-trait",
  "mpl-token-metadata",
  "solana-program",

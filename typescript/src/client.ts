@@ -10,6 +10,7 @@ import {
   createBuyTicketTransaction,
   createCreateDrawRegentTransaction,
   createCreateTimedSolDrawTransaction,
+  createDrawWinnersTransaction,
   createInitializeEmperorTransaction,
   createStartDrawTransaction,
   createUpdateDrawRegentTransaction,
@@ -225,8 +226,9 @@ export class NexDraw {
    *
    */
   async buyTicket(draw: PublicKey): Promise<string> {
-    const sold: number = (await this.#program.account.draw.fetch(draw)).ticketInfo.sold;
+    const sold: number = (await this.#program.account.draw.fetch(draw)).drawInfo.ticketInfo.sold;
     let max = sold * 2 > 100 ? sold * 2 : 100;
+    console.log(max);
     let ticketId = 0;
     while (true) {
       // generate a random number between 0 and max
@@ -244,6 +246,15 @@ export class NexDraw {
     const tx = (await createBuyTicketTransaction(this.#program, draw, ticketId)).add(modifyComputeUnits);
     return this._withParsedTransactionError(tx);
   }
+
+  async drawWinners(draw: PublicKey): Promise<string> {
+    const modifyComputeUnits = ComputeBudgetProgram.setComputeUnitLimit({
+      units: 1000000
+    });
+    const tx = (await createDrawWinnersTransaction(this.#program, draw)).add(modifyComputeUnits);
+    return this._withParsedTransactionError(tx);
+  }
+
   private async _withParsedTransactionError(tx: Transaction): Promise<string> {
     try {
       return await this.#provider.sendAndConfirm!(tx);

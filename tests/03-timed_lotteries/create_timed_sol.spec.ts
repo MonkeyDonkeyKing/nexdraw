@@ -34,7 +34,7 @@ describe('TimedSolDraw Functionality', () => {
       const drawData = await regent.program.account.draw.fetch(drawAccount);
 
       // Assertions to ensure the draw has been created with the correct parameters
-      assert.strictEqual(drawData.ticketInfo.price.sol.value.toNumber(), ticketPrice.toNumber());
+      assert.strictEqual(drawData.drawInfo.ticketInfo.price.sol.value.toNumber(), ticketPrice.toNumber());
       assert.strictEqual(drawData.drawInfo.drawType.timed[0].endTime.toNumber(), timedParams.endTime.toNumber());
       assert.strictEqual(drawData.drawInfo.drawType.timed[0].minTicketsSold, timedParams.minTicketsSold);
       // ... Add other assertions as needed ...
@@ -135,7 +135,7 @@ describe('TimedSolDraw Functionality', () => {
           ticketsForSale: null
         });
         const accdata = await regent.program.account.draw.fetch(deriveDraw(drawRegentAccount, 0)[0]);
-        if (new anchor.BN(accdata.ticketInfo.price.sol.value).toNumber() < 0) {
+        if (new anchor.BN(accdata.drawInfo.ticketInfo.price.sol.value).toNumber() < 0) {
           assert.fail('Should throw an error due to negative ticket price.');
         } else {
           assert.ok(true);
@@ -181,19 +181,23 @@ describe('TimedSolDraw Functionality', () => {
         .initializeAsDrawRegent(amount, 0)
         .build();
 
-        for (let i = 0;  i < creates; i++) {
-          await regent.createDraw(new anchor.BN(0), {
-            endTime: new anchor.BN(Date.now() / 1000 + 86400),
-            minTicketsSold: 1,
-            ticketsForSale: null
-          });
-        }
-        const regentManager = await regent.program.account.drawRegent.fetch(deriveDrawRegent(regent.provider.publicKey)[0]);
-        const draws = await regent.program.account.draw.all();
-        const filtered = draws.filter((draw) => draw.account.drawRegent.equals(deriveDrawRegent(regent.provider.publicKey)[0]));
-        assert.strictEqual(filtered.length, creates, 'Should only have 5 draws');
-        assert.strictEqual(regentManager.drawsRemaining, amount - creates, 'Should have 0 draws remaining');
-        assert.strictEqual(regentManager.nextDrawId, amount, 'Should have created 5 draws')
+      for (let i = 0; i < creates; i++) {
+        await regent.createDraw(new anchor.BN(0), {
+          endTime: new anchor.BN(Date.now() / 1000 + 86400),
+          minTicketsSold: 1,
+          ticketsForSale: null
+        });
+      }
+      const regentManager = await regent.program.account.drawRegent.fetch(
+        deriveDrawRegent(regent.provider.publicKey)[0]
+      );
+      const draws = await regent.program.account.draw.all();
+      const filtered = draws.filter(draw =>
+        draw.account.drawRegent.equals(deriveDrawRegent(regent.provider.publicKey)[0])
+      );
+      assert.strictEqual(filtered.length, creates, 'Should only have 5 draws');
+      assert.strictEqual(regentManager.drawsRemaining, amount - creates, 'Should have 0 draws remaining');
+      assert.strictEqual(regentManager.nextDrawId, amount, 'Should have created 5 draws');
     });
     it('gets 10 and creates 5 draws', async () => {
       const amount = 10;
@@ -204,21 +208,25 @@ describe('TimedSolDraw Functionality', () => {
         .initializeAsDrawRegent(amount, 0)
         .build();
 
-        for (let i = 0;  i < creates; i++) {
-          await regent.createDraw(new anchor.BN(0), {
-            endTime: new anchor.BN(Date.now() / 1000 + 86400),
-            minTicketsSold: 1,
-            ticketsForSale: null
-          });
-        }
-        const regentManager = await regent.program.account.drawRegent.fetch(deriveDrawRegent(regent.provider.publicKey)[0]);
-        const draws = await regent.program.account.draw.all();
-        const filtered = draws.filter((draw) => draw.account.drawRegent.equals(deriveDrawRegent(regent.provider.publicKey)[0]));
-        assert.strictEqual(filtered.length, creates, 'Should only have 5 draws');
-        assert.strictEqual(regentManager.nextDrawId, amount - creates, 'Should have 5 draws remaining');
-        assert.strictEqual(regentManager.drawsRemaining, amount - creates, 'Should have created 5 draws');
-      });
-    it("tries to create 6 draws but only has 5 draws remaining", async () => {
+      for (let i = 0; i < creates; i++) {
+        await regent.createDraw(new anchor.BN(0), {
+          endTime: new anchor.BN(Date.now() / 1000 + 86400),
+          minTicketsSold: 1,
+          ticketsForSale: null
+        });
+      }
+      const regentManager = await regent.program.account.drawRegent.fetch(
+        deriveDrawRegent(regent.provider.publicKey)[0]
+      );
+      const draws = await regent.program.account.draw.all();
+      const filtered = draws.filter(draw =>
+        draw.account.drawRegent.equals(deriveDrawRegent(regent.provider.publicKey)[0])
+      );
+      assert.strictEqual(filtered.length, creates, 'Should only have 5 draws');
+      assert.strictEqual(regentManager.nextDrawId, amount - creates, 'Should have 5 draws remaining');
+      assert.strictEqual(regentManager.drawsRemaining, amount - creates, 'Should have created 5 draws');
+    });
+    it('tries to create 6 draws but only has 5 draws remaining', async () => {
       const amount = 5;
       const creates = 6;
       let fails = 0;
@@ -228,23 +236,27 @@ describe('TimedSolDraw Functionality', () => {
         .initializeAsDrawRegent(amount, 0)
         .build();
 
-        for (let i = 0;  i < creates; i++) {
-          try {
-            await regent.createDraw(new anchor.BN(0), {
-              endTime: new anchor.BN(Date.now() / 1000 + 86400),
-              minTicketsSold: 1,
-              ticketsForSale: null
-            });
-          } catch {
-            fails++;
-          }
+      for (let i = 0; i < creates; i++) {
+        try {
+          await regent.createDraw(new anchor.BN(0), {
+            endTime: new anchor.BN(Date.now() / 1000 + 86400),
+            minTicketsSold: 1,
+            ticketsForSale: null
+          });
+        } catch {
+          fails++;
         }
-        const regentManager = await regent.program.account.drawRegent.fetch(deriveDrawRegent(regent.provider.publicKey)[0]);
-        const draws = await regent.program.account.draw.all();
-        const filtered = draws.filter((draw) => draw.account.drawRegent.equals(deriveDrawRegent(regent.provider.publicKey)[0]));
-        assert.strictEqual(filtered.length, amount, 'Should only have 5 draws');
-        assert.strictEqual(regentManager.drawsRemaining, 0, 'Should have 0 draws remaining');
-        assert.strictEqual(fails, 1, 'Should have 1 failed draw');
+      }
+      const regentManager = await regent.program.account.drawRegent.fetch(
+        deriveDrawRegent(regent.provider.publicKey)[0]
+      );
+      const draws = await regent.program.account.draw.all();
+      const filtered = draws.filter(draw =>
+        draw.account.drawRegent.equals(deriveDrawRegent(regent.provider.publicKey)[0])
+      );
+      assert.strictEqual(filtered.length, amount, 'Should only have 5 draws');
+      assert.strictEqual(regentManager.drawsRemaining, 0, 'Should have 0 draws remaining');
+      assert.strictEqual(fails, 1, 'Should have 1 failed draw');
     });
   });
 

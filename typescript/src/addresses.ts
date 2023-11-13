@@ -44,6 +44,10 @@ export function deriveTicketMint(draw: PublicKey, ticketId: number): [PublicKey,
   );
 }
 
+export function deriveVerificationAccount(draw: PublicKey): [PublicKey, number] {
+  return PublicKey.findProgramAddressSync([Buffer.from('verification'), draw.toBytes()], PROGRAM_ID);
+}
+
 //// Metaplex Pdas
 export function deriveMetadata(mint: PublicKey) {
   return PublicKey.findProgramAddressSync(

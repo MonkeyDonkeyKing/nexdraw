@@ -687,6 +687,78 @@ export type Nexdraw = {
           "type": "u32"
         }
       ]
+    },
+    {
+      "name": "drawWinners",
+      "accounts": [
+        {
+          "name": "draw",
+          "isMut": true,
+          "isSigner": false,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "type": "string",
+                "value": "draw"
+              },
+              {
+                "kind": "account",
+                "type": "publicKey",
+                "account": "Draw",
+                "path": "draw.draw_regent"
+              },
+              {
+                "kind": "account",
+                "type": "u32",
+                "account": "Draw",
+                "path": "draw.draw_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "verificationAccount",
+          "isMut": true,
+          "isSigner": false,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "type": "string",
+                "value": "verification"
+              },
+              {
+                "kind": "account",
+                "type": "publicKey",
+                "account": "Draw",
+                "path": "draw"
+              }
+            ]
+          }
+        },
+        {
+          "name": "payer",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "rent",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "recentSlothashes",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": []
     }
   ],
   "accounts": [
@@ -719,16 +791,10 @@ export type Nexdraw = {
             }
           },
           {
-            "name": "ticketInfo",
+            "name": "winners",
             "docs": [
               "The info about the tickets,"
             ],
-            "type": {
-              "defined": "TicketInfo"
-            }
-          },
-          {
-            "name": "winners",
             "type": {
               "defined": "Winners"
             }
@@ -804,6 +870,24 @@ export type Nexdraw = {
           }
         ]
       }
+    },
+    {
+      "name": "verificationStruct",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "draw",
+            "type": "publicKey"
+          },
+          {
+            "name": "potentialWinners",
+            "type": {
+              "vec": "u32"
+            }
+          }
+        ]
+      }
     }
   ],
   "types": [
@@ -873,6 +957,12 @@ export type Nexdraw = {
             "name": "prizes",
             "type": {
               "defined": "Prizes"
+            }
+          },
+          {
+            "name": "ticketInfo",
+            "type": {
+              "defined": "TicketInfo"
             }
           }
         ]
@@ -1249,6 +1339,22 @@ export type Nexdraw = {
     {
       "code": 6008,
       "name": "ExceedMaxTicketId"
+    },
+    {
+      "code": 6009,
+      "name": "DrawEnded"
+    },
+    {
+      "code": 6010,
+      "name": "MaxCapReached"
+    },
+    {
+      "code": 6011,
+      "name": "NotEnoughTicketsSold"
+    },
+    {
+      "code": 6012,
+      "name": "DrawTimeNotOver"
     }
   ]
 };
@@ -1942,6 +2048,78 @@ export const IDL: Nexdraw = {
           "type": "u32"
         }
       ]
+    },
+    {
+      "name": "drawWinners",
+      "accounts": [
+        {
+          "name": "draw",
+          "isMut": true,
+          "isSigner": false,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "type": "string",
+                "value": "draw"
+              },
+              {
+                "kind": "account",
+                "type": "publicKey",
+                "account": "Draw",
+                "path": "draw.draw_regent"
+              },
+              {
+                "kind": "account",
+                "type": "u32",
+                "account": "Draw",
+                "path": "draw.draw_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "verificationAccount",
+          "isMut": true,
+          "isSigner": false,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "type": "string",
+                "value": "verification"
+              },
+              {
+                "kind": "account",
+                "type": "publicKey",
+                "account": "Draw",
+                "path": "draw"
+              }
+            ]
+          }
+        },
+        {
+          "name": "payer",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "rent",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "recentSlothashes",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": []
     }
   ],
   "accounts": [
@@ -1974,16 +2152,10 @@ export const IDL: Nexdraw = {
             }
           },
           {
-            "name": "ticketInfo",
+            "name": "winners",
             "docs": [
               "The info about the tickets,"
             ],
-            "type": {
-              "defined": "TicketInfo"
-            }
-          },
-          {
-            "name": "winners",
             "type": {
               "defined": "Winners"
             }
@@ -2059,6 +2231,24 @@ export const IDL: Nexdraw = {
           }
         ]
       }
+    },
+    {
+      "name": "verificationStruct",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "draw",
+            "type": "publicKey"
+          },
+          {
+            "name": "potentialWinners",
+            "type": {
+              "vec": "u32"
+            }
+          }
+        ]
+      }
     }
   ],
   "types": [
@@ -2128,6 +2318,12 @@ export const IDL: Nexdraw = {
             "name": "prizes",
             "type": {
               "defined": "Prizes"
+            }
+          },
+          {
+            "name": "ticketInfo",
+            "type": {
+              "defined": "TicketInfo"
             }
           }
         ]
@@ -2504,6 +2700,22 @@ export const IDL: Nexdraw = {
     {
       "code": 6008,
       "name": "ExceedMaxTicketId"
+    },
+    {
+      "code": 6009,
+      "name": "DrawEnded"
+    },
+    {
+      "code": 6010,
+      "name": "MaxCapReached"
+    },
+    {
+      "code": 6011,
+      "name": "NotEnoughTicketsSold"
+    },
+    {
+      "code": 6012,
+      "name": "DrawTimeNotOver"
     }
   ]
 };

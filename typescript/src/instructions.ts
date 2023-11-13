@@ -10,7 +10,8 @@ import {
   deriveDrawRegent,
   deriveMasterEdition,
   deriveMetadata,
-  deriveTicketMint
+  deriveTicketMint,
+  deriveVerificationAccount
 } from './addresses';
 import { IdlTimedParams, MethodParams, startDrawParams } from './types';
 import { getAssociatedTokenAddressSync } from '@solana/spl-token';
@@ -390,6 +391,39 @@ export async function createBuyTicketInstruction(
       ticketMint,
       buyerTokenAccount,
       metadataProgram: TOKEN_METADATA_PROGRAM_ID
+    })
+    .instruction();
+}
+
+export async function createDrawWinnersTransaction(program: Program<Nexdraw>, draw: PublicKey): Promise<Transaction> {
+  const ix = await createDrawWinnersInstruction(program, draw);
+  return new Transaction().add(ix);
+}
+
+/**
+ * Create the ix instance for the `draw_winners` instruction.
+ * @export
+ * @param {Program<Nexdraw>} program
+ * @param {PublicKey} draw
+ * @returns {Promise<TransactionInstruction>}
+ *
+ */
+export async function createDrawWinnersInstruction(
+  program: Program<Nexdraw>,
+  draw: PublicKey
+): Promise<TransactionInstruction> {
+  if (!program.provider.publicKey) {
+    throw new Error('no public key found on the program provider');
+  }
+  const [verificationAccount] = deriveVerificationAccount(draw);
+  const recentSlothashes = new PublicKey('SysvarS1otHashes111111111111111111111111111');
+
+  return program.methods
+    .drawWinners()
+    .accounts({
+      draw,
+      verificationAccount,
+      recentSlothashes
     })
     .instruction();
 }

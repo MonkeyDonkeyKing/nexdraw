@@ -1,7 +1,7 @@
 import * as anchor from '@coral-xyz/anchor';
 import { client, createRandomProvider } from '../common';
 import { assert } from 'chai';
-import { NexDraw, createAddPoolPrizeInstruction, createBuyTicketInstruction, createStartDrawInstruction, deriveDraw, startDrawParams } from '../../typescript/src';
+import { NexDraw, createAddPoolPrizeInstruction, createStartDrawInstruction, deriveDraw, deriveDrawMint, deriveMasterEdition, deriveMetadata, startDrawParams } from '../../typescript/src';
 import { LAMPORTS_PER_SOL } from '@solana/web3.js';
 import { NexDrawBuilder } from '../context_builder';
 
@@ -39,17 +39,12 @@ describe('Start draw Functionality', () => {
     const res = await regent.addPoolPrizeToDraw(drawPubkey[0], prize);
     draw = await regent.program.account.draw.fetch(drawPubkey[0]);
 
-    assert.ok;
+    assert.strictEqual(draw.drawInfo.prizes.prizes.length, 1);
+    assert.strictEqual(draw.drawInfo.prizes.prizes[0].percentage?.value, prize);
   })
 
   it('start draw', async () => {
     let draw = await regent.program.account.draw.fetch(drawPubkey[0]);
-
-    const startDrawParams: startDrawParams = {
-      name: `Test Collection ${draw.drawId}`,
-      symbol: 'NXDRW',
-      uri: 'https://ipfs.io/ipfs/bafkreicja2w6txnvco7hhcynm7ubh236kn4xmp3u7msdf4lanctxclt25q/'
-    }
 
     const nftStartDrawParams: startDrawParams = {
       name: `Test Ticket`,
@@ -57,12 +52,12 @@ describe('Start draw Functionality', () => {
       uri: 'https://ipfs.io/ipfs/bafkreicja2w6txnvco7hhcynm7ubh236kn4xmp3u7msdf4lanctxclt25q/'
     }
 
-    const drawix = await createStartDrawInstruction(regent.program, drawPubkey[0], startDrawParams);
     const resD = await regent.startDraw(drawPubkey[0], nftStartDrawParams)
-
     draw = await regent.program.account.draw.fetch(drawPubkey[0]);
 
-    assert.ok;
+    const drawStatusExpected = {}; // To match {live: {}} status
+
+    assert.deepEqual(draw.drawInfo.status.live, drawStatusExpected);
   })
 
 });

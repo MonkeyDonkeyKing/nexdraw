@@ -46,16 +46,11 @@ describe('Buy ticket functionality', () => {
     const res = await regent.addPoolPrizeToDraw(drawPubkey[0], prize);
     draw = await regent.program.account.draw.fetch(drawPubkey[0]);
 
-    assert.ok;
+    assert.strictEqual(draw.drawInfo.prizes.prizes.length, 1);
+    assert.strictEqual(draw.drawInfo.prizes.prizes[0].percentage?.value, prize);
   });
 
   it('start draw', async () => {
-    const startDrawParams: startDrawParams = {
-      name: `Test Collection ${draw.drawId}`,
-      symbol: 'NXDRW',
-      uri: 'https://ipfs.io/ipfs/bafkreicja2w6txnvco7hhcynm7ubh236kn4xmp3u7msdf4lanctxclt25q/'
-    };
-
     const nftStartDrawParams: startDrawParams = {
       name: `Test Ticket`,
       symbol: 'NXDRW',
@@ -64,16 +59,28 @@ describe('Buy ticket functionality', () => {
 
     const resD = await regent.startDraw(drawPubkey[0], nftStartDrawParams);
     const [mint] = deriveDrawMint(drawPubkey[0]);
-    const [metadata] = deriveMetadata(mint);
-    const [masterEdition] = deriveMasterEdition(mint);
+
+    const drawStatusExpected = {}; // To match {live: {}} status
+    draw = await regent.program.account.draw.fetch(drawPubkey[0]);
+
+    assert.deepEqual(draw.drawInfo.status.live, drawStatusExpected);
   });
 
   it('buy ticket', async () => {
-    // buy ticket
-    const amount = 1;
-    const rest = await regent.buyTicket(drawPubkey[0]).catch(err => {
+    const resT = await regent.buyTicket(drawPubkey[0]).catch(err => {
       console.log(err);
-    });
-    assert.ok;
+    }).then(assert.ok,assert.notOk);
+  });
+
+  it('buy multiple tickets', async () => {
+    let hasError = false;
+     for (let index = 0; index < 5; index++) {
+      if(hasError) return;
+
+      await regent.buyTicket(drawPubkey[0]).catch(err => {
+      console.log(err);
+      hasError = true;
+      }).then(assert.ok, assert.notOk);
+    }
   });
 });

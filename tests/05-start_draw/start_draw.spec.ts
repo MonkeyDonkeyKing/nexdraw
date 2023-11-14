@@ -55,9 +55,7 @@ describe('Start draw Functionality', () => {
     const resD = await regent.startDraw(drawPubkey[0], nftStartDrawParams)
     draw = await regent.program.account.draw.fetch(drawPubkey[0]);
 
-    const drawStatusExpected = {}; // To match {live: {}} status
-
-    assert.deepEqual(draw.drawInfo.status.live, drawStatusExpected);
-  })
+    assert.property(draw.drawInfo.status, 'live'); 
+   })
 
 });

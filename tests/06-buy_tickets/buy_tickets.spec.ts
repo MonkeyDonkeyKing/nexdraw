@@ -60,10 +60,9 @@ describe('Buy ticket functionality', () => {
     const resD = await regent.startDraw(drawPubkey[0], nftStartDrawParams);
     const [mint] = deriveDrawMint(drawPubkey[0]);
 
-    const drawStatusExpected = {}; // To match {live: {}} status
     draw = await regent.program.account.draw.fetch(drawPubkey[0]);
 
-    assert.deepEqual(draw.drawInfo.status.live, drawStatusExpected);
+    assert.property(draw.drawInfo.status, 'live'); 
   });
 
   it('buy ticket', async () => {
